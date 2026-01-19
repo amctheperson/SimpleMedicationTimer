@@ -94,6 +94,28 @@ public class Medication{
 		return true;
 				
 	}
+	
+
+	// Note that this modifier method for lastReportedlyTaken should be called
+	// from the UI, all other ones are defunct from now on (disregard earlier)
+
+	// because trytaking only checks for conflicts if retaking the same Medication
+	// as opposed to overlap of mental clarity from other Medication
+	// can be retooled by making an order list of Medication
+
+	// like an order to it or something idk
+	// Medication[] routine = {adderall 20 mg xr, adderall 10 mg IR};
+
+	// something like that yeah
+
+	public void take(){
+
+		lastReportedlyTaken = LocalDateTime.now(); 
+				
+	}
+
+
+	
 
 	// Note that the following functions were made for debugging purposes
 	// and also are good review for myself - Andrew
@@ -139,10 +161,23 @@ public class Medication{
 			return false;
 		}
 		
+		// Note to self that since the class property totalHoursOfClarity is a long
+		// and therefore a primitive, we can compare the property of two Medication 
+		// instances via equals signs aka through memory address codes
+
+		// Note that we do not compare the class property lastReportedlyTaken here
+		// as it is not an essential characteristic of a Medication 
+		// and if two Medication objects equate in all the other properties
+		// then logically they are equivalent Medications, just possibly taken
+		// at two different times
+
+		// Truthfully this is to prevent duplications of JSON files from being made
+		// when checking if a Medication has already been saved (see LocalData.java
+		// for more on this) 
+			
 		return name.equals(otherMed.getName()) && dosage.equals(otherMed.getDosage()) &&
-		totalHoursOfClarity == otherMed.getTotalHoursOfClarity() && // long is primitive so its ok
-		type.equals(otherMed.getType()) && 
-		lastReportedlyTaken.equals(otherMed.getLastReportedlyTaken());
+		totalHoursOfClarity == otherMed.getTotalHoursOfClarity() &&
+		type.equals(otherMed.getType()); 
 
 	}
 	
@@ -151,6 +186,12 @@ public class Medication{
 	// we should make sure the hashCode function also makes the hashcodes of two equivalent Medicine
 	// objects the same
 	
+	// Note that similar to how we ignore the lastReportedlyTaken class property
+	// in the overridden equals comparison function above,
+	// we do not use this same class property in the overriden hashCode generation function
+	// because two Medication objects equivalent in all other class properties
+	// should be considered equivalent, and therefore generate the same hashcode
+		
 	@Override
 	public int hashCode(){
 		int result = 1;
@@ -158,9 +199,6 @@ public class Medication{
 		result = 31 * result + (dosage == null ? 0 : dosage.hashCode());
 		result = 31 * result + ((Long) totalHoursOfClarity == null ? 0 : Long.hashCode(totalHoursOfClarity));
 		result = 31 * result + (type == null ? 0 : type.hashCode());
-		result = 31 * result + (lastReportedlyTaken == null ? 0 : lastReportedlyTaken.hashCode());
 		return result;
-	}
-
-		
+	}		
 }
