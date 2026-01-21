@@ -19,6 +19,8 @@ import java.nio.ReadOnlyBufferException;
 import java.lang.IllegalArgumentException;
 import java.lang.NullPointerException;
 
+import java.util.ArrayList;
+
 // Note that the purpose of this class is to hold all functionality involving saving and loading
 // all data of objects locally
 
@@ -124,41 +126,6 @@ public class LocalData{
 	
 	}
 
-	// TO-DO: Finish this method, see paper notes
-
-	public static void saveMedicationToFile(Medication med) throws Exception{
-			
-		String jsonString = medicationToJSONString(med);
-
-		// we need a unique identifier for each Medication json
-		// why not use the hashcode?
-
-		// we should iterate over each json file before saving and check for duplicates
-		// remove duplicate object files actually
-
-		// Note that we make use of the hashcode of the provided Medication object 
-		// as a unique identifier in the name of the file
-		// and based on our equals/hashcode functions for the Medication object
-		// (see Medication.java) we can assume that any overwriting of existing
-		// JSON files with the same hashcode in its name will only occur
-		// with the same file  
-
-		String jsonFileName = "Medication_" + med.hashCode() + ".json";		
-
-		File jsonFile = new File("./" + jsonFileName);
-		jsonFile.createNewFile();
-		jsonFile.setWritable(true);
-		
-		try{
-			FileWriter jsonFileWriter = new FileWriter(jsonFile);
-			jsonFileWriter.write(jsonString);
-			jsonFileWriter.close();
-		}
-		catch(IOException ie){
-			new Exception("Couldn't open the specified file or write to said file!");
-		}
-		
-	}
 	
 	// This method takes in a File object and attempts to load it into a String
 
@@ -176,9 +143,10 @@ public class LocalData{
 			// Note that this line can cause an IllegalArgument exception
 
 			// Also note that we chose 300 as a CharBuffer size on account of
-			// our test json files being around 124 characters long
+			// our test JSON files being around 124 characters long
 
 			// also MAX 300
+
 			CharBuffer someCharBuffer = CharBuffer.allocate(300);
 
 			// Note that this int keeps track of how many characters were read
@@ -225,4 +193,143 @@ public class LocalData{
 
 		return someJsonString;
 	}
+	
+	// Function for getting all Medication JSON Files in the current directory
+	// Returns an ArrayList of Files
+
+	public static ArrayList<File> getAllMedicationJsonFilesHere(){
+		
+		// Note that we invoke an ArrayList
+		// because we do not know how many Medication JSON files are in
+		// the current directory
+
+		// and therefore do not know how large of an array of Medication objects
+		// we will need
+
+		// and furthermore we need an array that can dynamically-change in size
+		
+		// Note to self that we don't choose to convert this list to an array
+		// or use a set as an alternative since order of the JSON files (doesn't matter)
+		// after it is loaded because we are not working with an immense amount of data
+
+		// However we should consider converting these options if the app runs slow
+		// in the future
+
+		ArrayList<File> fileArrayList = new ArrayList<File>();
+					
+		// Open the current directory as a File object
+
+		File curDir = new File("./");
+		
+		// This is a for-each block called on a list of all File objects that could
+		// be any file or subfolder in the current directory
+
+		// and iterates through each of these File objects	
+	
+		for(File someFile : curDir.listFiles()){
+
+			// Skip all subdirectories
+			if(someFile.isDirectory()){ // Skip all subdirectories
+				continue;
+			}
+
+			String someFileName = someFile.getName();
+			
+			// We are looking for files that start with "Medication_"
+			// and end in ".json"
+			
+			// and since the prefix is 11 chars and this suffix is 5 chars
+			
+			// we can conclude that the filenames we're looking for
+			// are at least 11 + 5 chars, or 16 chars, long
+			// conversely we can exclude any filenames shorter than 16 chars
+
+			// so this conditional skips any Files
+			// whose names aren't at least 16 chars long
+			// because it would not be possible for them to be valid JSON
+			// files due to the above prefix and suffix
+				
+			if(someFileName.length() < 16){
+				continue;
+			}
+
+			// this also filters out any File objects that would cause
+			// index out of bound exceptions 
+			// when we grab substrings from the File name in the next block here
+
+			// Note that we could also exclude Strings that are 16 char long 
+			// aka changing the "< 16" to "<= 16" 
+			// but we are leaving it in, just in case the hashcode returns as nothing
+			
+			// These lines grab substrings of the File name 
+			// that could equate to the prefix and suffix that we mentioned earlier
+
+			// Note that the second line starts at the index 5 chars from the end
+			// and then goes to the end of the string
+
+			String prefix_check = someFileName.substring(0,11);
+			String suffix_check = someFileName.substring(someFileName.length() - 5);
+
+			// This conditional filters out any files without the correct prefix
+			// or without the correct suffix mentioned earlier ("Medication_", ".json")
+				
+			if(!prefix_check.equals("Medication_") || !suffix_check.equals(".json")){
+				//System.out.println(someFileName);
+				continue;
+			}
+			
+			// We can assume that the only remaining File objects here are named like
+			// "Medication_[some hashcode integer].json"
+
+			// Note to self that in actual use of this app
+			// this collection of remaining File objects should be at most...2-3 files
+
+			
+			fileArrayList.add(someFile);
+
+		}
+
+		return fileArrayList;
+		
+	}	
+
+
+	// TO-DO: Finish this method, see paper notes
+
+	public static void saveMedicationToFile(Medication med) throws Exception{
+			
+		String jsonString = medicationToJSONString(med);
+
+		// we need a unique identifier for each Medication json
+		// why not use the hashcode?
+
+		// we should iterate over each json file before saving and check for duplicates
+		// remove duplicate object files actually
+
+		// Note that we make use of the hashcode of the provided Medication object 
+		// as a unique identifier in the name of the file
+		// and based on our equals/hashcode functions for the Medication object
+		// (see Medication.java) we can assume that any overwriting of existing
+		// JSON files with the same hashcode in its name will only occur
+		// with the same file  
+
+		String jsonFileName = "Medication_" + med.hashCode() + ".json";		
+
+		File jsonFile = new File("./" + jsonFileName);
+		jsonFile.createNewFile();
+		jsonFile.setWritable(true);
+		
+		try{
+			FileWriter jsonFileWriter = new FileWriter(jsonFile);
+			jsonFileWriter.write(jsonString);
+			jsonFileWriter.close();
+		}
+		catch(IOException ie){
+			new Exception("Couldn't open the specified file or write to said file!");
+		}
+		
+	}
+	
+
+
 }
