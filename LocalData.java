@@ -21,6 +21,8 @@ import java.lang.NullPointerException;
 
 import java.util.ArrayList;
 
+import java.util.regex.PatternSyntaxException;
+
 // Note that the purpose of this class is to hold all functionality involving saving and loading
 // all data of objects locally
 
@@ -60,6 +62,7 @@ public class LocalData{
 		
 	}
 	
+
 	// For converting a JSON-formatted String into a new Medication object
 	
 	public static Medication jsonStringToMedication(String j_str) throws Exception{
@@ -112,8 +115,13 @@ public class LocalData{
 			
 		}
 		catch(JsonException je){
+			new Exception("Jsoner came across an unexpected token when deserializing " +
+				" the JSON string. In other words, the String provided is not in" +
+				" a valid JSON format.\n");
+			
 			System.out.print("Loading JSON string into JSONObject failed!" +
-				" Invalid JSON format!");
+				" Invalid JSON format!\n");
+			
 		}
 		
 		// this will only be returned if exceptions occur
@@ -125,7 +133,7 @@ public class LocalData{
 
 	
 	}
-
+	
 	
 	// This method takes in a File object and attempts to load it into a String
 
@@ -172,7 +180,20 @@ public class LocalData{
 				someCharBuffer.clear();
 			}
 			
-			someFileReader.close();			
+			someFileReader.close();
+
+			// Note to self that when reading a String from a file and manipulating it
+			// we should not assume that the String read from the file is what prints
+			// aka we need to strip said String of non-printable characters 
+			//(control characters) that may trip up any function
+			//that isn't expecting them in a String
+	
+			// also note that this line can cause a PatternSyntaxException
+			// which...has already been caught despite no explicit catch of it
+
+			// not entirely sure why, will look into some other time
+	
+			someJsonString = someJsonString.replaceAll("[\\p{C}]", "");			
 		}
 
 		catch(FileNotFoundException e){new Exception("FileReader constructor could " + 
@@ -186,11 +207,11 @@ public class LocalData{
 			"read(CharBuffer cb) of a FileReader instance.");}
 
 		catch(NullPointerException e){new Exception("The provided CharBuffer is a " +
-			"null object");}
+			"null object.");}
 
 		catch(ReadOnlyBufferException e){new Exception("Provided CharBuffer is set " +
-			"to read-only");}
-
+			"to read-only.");}
+		
 		return someJsonString;
 	}
 	
@@ -292,6 +313,18 @@ public class LocalData{
 		return fileArrayList;
 		
 	}	
+
+	
+	public static Medication loadMedicationFromFile(File jsonFile) throws Exception{
+		System.out.print("\tLoaded the following from " + jsonFile.getName() + ":\n");
+		String jsonString = jsonFileToString(jsonFile);
+		System.out.print(jsonString + "\n");		
+
+		Medication loadedMed = jsonStringToMedication(jsonString);
+
+		return loadedMed;
+		
+	}
 
 
 	// TO-DO: Finish this method, see paper notes
