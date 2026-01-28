@@ -3,8 +3,6 @@ import com.github.cliftonlabs.json_simple.Jsoner;
 import com.github.cliftonlabs.json_simple.JsonKey;
 import com.github.cliftonlabs.json_simple.JsonException; 
 
-import java.time.LocalDateTime;
-
 import java.lang.Exception;
 
 import java.io.File;
@@ -47,21 +45,14 @@ public class LocalData{
 		// to load class properties into a JSONObject hashmap
 		// that can return a JSON-formatted String
 		
-		JsonObject jo = new JsonObject();
+		JsonObject medJsonObject = new JsonObject();
 
-		jo.put("name", med.getName());
-		jo.put("dosage", med.getDosage());
-		jo.put("type", med.getType());
-		jo.put("totalHoursOfClarity", med.getTotalHoursOfClarity());
+		medJsonObject.put("name", med.getName());
+		medJsonObject.put("dosage", med.getDosage());
+		medJsonObject.put("type", med.getType());
+		medJsonObject.put("totalHoursOfClarity", med.getTotalHoursOfClarity());
 
-		// Note that usually a property that is an object itself would usually
-		// require its own JSON-formatted String before it can be serialized
-		// but LocalDateTime objects can be converted to String and back easily
-		// so we won't do that
-		
-		jo.put("lastReportedlyTaken", med.getLastReportedlyTaken().toString());
-
-		return jo.toJson();
+		return medJsonObject.toJson();
 		
 	}
 	
@@ -75,16 +66,15 @@ public class LocalData{
 		// JSON format
 			
 		try{
-			JsonObject jo = (JsonObject) Jsoner.deserialize(j_str);
+			JsonObject someJsonObject = (JsonObject) Jsoner.deserialize(j_str);
 
 			// Handling possible error if provided JSON String does not have 
 			// all the required fields of a Medication object 
 			
-			String[] fields = {"name", "dosage", "type", "totalHoursOfClarity",
-					"lastReportedlyTaken"};
+			String[] fields = {"name", "dosage", "type", "totalHoursOfClarity"};
 
 			for (String field : fields){
-				if(!jo.containsKey(field)){
+				if(!someJsonObject.containsKey(field)){
 					throw new Exception("JSON string provided does" + 
 					" not have the " + field + " property!\n");
 				}	
@@ -97,21 +87,18 @@ public class LocalData{
 			
 			// and thus we can yank class properties from the JSONObject
 
-			String loaded_name = jo.get("name").toString();	
-			String loaded_dosage = jo.get("dosage").toString();
-			String loaded_type = jo.get("type").toString();
-			long loaded_totalHoursOfClarity = 
-				Long.valueOf(jo.get("totalHoursOfClarity").toString());
-			LocalDateTime loaded_lastReportedlyTaken = 
-				LocalDateTime.parse(jo.get("lastReportedlyTaken").toString());
+			String loaded_name = someJsonObject.get("name").toString();	
+			String loaded_dosage = someJsonObject.get("dosage").toString();
+			String loaded_type = someJsonObject.get("type").toString();
+			double loaded_totalHoursOfClarity = 
+				Double.valueOf(someJsonObject.get("totalHoursOfClarity").
+					toString());
 			
 			// then we can create a new Medication object with these class properties
 
 			Medication someMed = new Medication(loaded_name, loaded_dosage,
 				loaded_type, loaded_totalHoursOfClarity);
-
-			someMed.setLastReportedlyTaken(loaded_lastReportedlyTaken);
-			
+	
 			// and then return what we have done
 
 			return someMed;
@@ -154,7 +141,7 @@ public class LocalData{
 			// Note that this line can cause an IllegalArgument exception
 
 			// Also note that we chose 300 as a CharBuffer size on account of
-			// our test JSON files being around 124 characters long
+			// our test JSON files being around 124 characters double
 
 			// also MAX 300
 
@@ -265,11 +252,11 @@ public class LocalData{
 			// and since the prefix is 11 chars and this suffix is 5 chars
 			
 			// we can conclude that the filenames we're looking for
-			// are at least 11 + 5 chars, or 16 chars, long
+			// are at least 11 + 5 chars, or 16 chars, double
 			// conversely we can exclude any filenames shorter than 16 chars
 
 			// so this conditional skips any Files
-			// whose names aren't at least 16 chars long
+			// whose names aren't at least 16 chars double
 			// because it would not be possible for them to be valid JSON
 			// files due to the above prefix and suffix
 				
@@ -281,7 +268,7 @@ public class LocalData{
 			// index out of bound exceptions 
 			// when we grab substrings from the File name in the next block here
 
-			// Note that we could also exclude Strings that are 16 char long 
+			// Note that we could also exclude Strings that are 16 char double 
 			// aka changing the "< 16" to "<= 16" 
 			// but we are leaving it in, just in case the hashcode returns as nothing
 			
