@@ -23,14 +23,17 @@ import java.util.ArrayList;
 
 import java.util.regex.PatternSyntaxException;
 
-// Note that the purpose of this class is to hold all functionality involving saving and loading
-// all data of objects locally
+// Note that the purpose of this class is
+// to hold all functionality involving the saving and loading
+// all data of objects locally stored on the user's device
 
-// In other words, this is where we save and load Medication objects to-and-from JSON files
-// because it would be inefficient to make every Medication object being created have to import functions from an external package first
+// In other words, this is where we save and load Medication objects
+// to-and-from JSON files
+// because it would be inefficient to make every Medication object being created
+// have to import functions from an external package first
 
-// plus the functionality of handling it's own conversion to a JSON file is beyond the scope
-// of what a Medication object is supposed to represent
+// plus the functionality of handling its own conversion to a JSON file
+// is beyond the scope of what a Medication object is supposed to represent
 
 // In other words...they're just some ADHD meds dawg
 
@@ -315,10 +318,29 @@ public class LocalData{
 	}	
 
 	
+
+	
 	public static Medication loadMedicationFromFile(File jsonFile) throws Exception{
-		System.out.print("\tLoaded the following from " + jsonFile.getName() + ":\n");
+		
+		// Note to self that through the power of helper functions (aka, splitting
+		// the process up into smaller singular-use functions)
+
+		// the final code for the actual save and load functions is very clear
+		// to read, the helper functions were a lot easier to debug since they
+		// were not that complicated themselves,
+		// workflow in testing functions piece-wise made debugging a lot less
+		// unbearable also (test functionality in a main loop, implement, test the function)
+		// and these helper functions could be reused for another class (like...for
+		// this User class that I may be implementing right now)
+		
+		// on top of all of that...it just looks elegant
+
+		// Note that this function essentially does the following
+		
+		// JSON File --> JSON-formatted String --> Medication object
+		
+		
 		String jsonString = jsonFileToString(jsonFile);
-		System.out.print(jsonString + "\n");		
 
 		Medication loadedMed = jsonStringToMedication(jsonString);
 
