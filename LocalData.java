@@ -349,10 +349,97 @@ public class LocalData{
 	}
 
 
+	public static String generateFileName(Medication med){
+		
+		String fileName = "Medication_" + med.hashCode() + ".json";		
+		
+		return fileName;
+	}
+
+	// TO-DO consider refactoring this to return booleans and true whenever
+	// a collision has been resolved because the file does not need to be rewritten then
+	// in collision 1 and 3
+
+	public static void resolveAnyDuplicateFiles(Medication newMed) throws Exception{
+		
+		ArrayList<File> allMedFiles = getAllMedicationJsonFilesHere();
+		
+		for(File existingMedFile : allMedFiles){
+			
+			Medication existingMed = loadMedicationFromFile(existingMedFile);
+			
+			String newMedFileName = generateFileName(newMed);
+			String existingFileName = existingMedFile.getName();
+			
+
+			// Possible collision #1:
+			// our new Medication exists already under a different filename
+
+			// aka if the new med is equivalent to an existing med
+			// but the filenames are not the same
+			try{
+				if(newMed.equals(existingMed) && 
+					!newMedFileName.equals(existingFileName)){
+					
+					// address collision by simply renaming the file
+					// with what the object would have been named
+					// totally fine to do since the contents are equivalent
+					
+
+					// Note that this line can cause a SecurityException
+					// or a NullPointerException
+						
+					existingMedFile.renameTo(new File("./" + newMedFileName));
+				}
+				
+				// Possible collision #2:
+				// our new Medication's file name is taken by an existing Medication
+				// that is different in content from our new Medication
+				
+				if(!newMed.equals(existingMed) && 
+					newMedFileName.equals(existingFileName)){
+					
+					//address collision by simply renaming the existing file
+					//with a filename that will be different since it's
+					// derived from this runtime's hashcode
+
+					String anotherFileName = generateFileName(existingMed);
+
+					// Note that this line can ALSO cause a SecurityException
+					// or a NullPointerException
+					
+					existingMedFile.renameTo(new File("./" + anotherFileName));
+				}
+			}
+			catch(SecurityException e){
+				new Exception("Security manager disallowed access to one of the " +
+					"files.");
+			}
+			catch(NullPointerException e){
+				new Exception("The provided destination File in renameTo() is " + 
+					"null.");
+			}
+			
+			// Possible collision #3:
+
+			// our new Medication is equivalent to an existing Medication and they
+			// have the same file name
+
+			// We intentionally leave this blank because it should be rewritten
+
+			// now if Medication was refactored to remove lastReportedlyTaken
+			// then it really does not need to be rewritten
+
+			// so stay tuned...	
+		}
+	}
+
 	// TO-DO: Finish this method, see paper notes
 
-	public static void saveMedicationToFile(Medication med) throws Exception{
-			
+	public static File saveMedicationToFile(Medication med) throws Exception{
+		
+		resolveAnyDuplicateFiles(med);	
+	
 		String jsonString = medicationToJSONString(med);
 
 		// we need a unique identifier for each Medication json
@@ -368,7 +455,8 @@ public class LocalData{
 		// JSON files with the same hashcode in its name will only occur
 		// with the same file  
 
-		String jsonFileName = "Medication_" + med.hashCode() + ".json";		
+		String jsonFileName = generateFileName(med);
+		//String jsonFileName = "Medication_" + med.hashCode() + ".json";		
 
 		File jsonFile = new File("./" + jsonFileName);
 		jsonFile.createNewFile();
@@ -382,6 +470,8 @@ public class LocalData{
 		catch(IOException ie){
 			new Exception("Couldn't open the specified file or write to said file!");
 		}
+
+		return jsonFile;
 		
 	}
 	
