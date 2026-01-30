@@ -108,7 +108,7 @@ public class LocalData{
 			new Exception("Jsoner came across an unexpected token when deserializing " +
 				" the JSON string. In other words, the String provided is not in" +
 				" a valid JSON format.\n");
-			
+			System.out.println(j_str);	
 			System.out.print("Loading JSON string into JSONObject failed!" +
 				" Invalid JSON format!\n");
 			
@@ -299,7 +299,7 @@ public class LocalData{
 			fileArrayList.add(someFile);
 
 		}
-
+		
 		return fileArrayList;
 		
 	}	
@@ -328,6 +328,10 @@ public class LocalData{
 		
 		
 		String jsonString = jsonFileToString(jsonFile);
+		
+		//System.out.println("Loading File " + jsonFile.toString() + " as the following:"); 	
+		//System.out.println(jsonString);		
+
 
 		Medication loadedMed = jsonStringToMedication(jsonString);
 
@@ -343,12 +347,14 @@ public class LocalData{
 		return fileName;
 	}
 
-	// TO-DO consider refactoring this to return booleans and true whenever
-	// a collision has been resolved because the file does not need to be rewritten then
-	// in collision 1 and 3
-
-	public static void resolveAnyDuplicateFiles(Medication newMed) throws Exception{
-		
+	// Helper function for saving Medication functionality
+	
+	// Checks if any existing Medication local files are valid duplicates of a Medication
+	// we want to save -- valid as in same file name, but also represents an equivalent
+	// Medication object
+	
+	public static boolean validDuplicateFileCheck(Medication newMed) throws Exception{
+			
 		ArrayList<File> allMedFiles = getAllMedicationJsonFilesHere();
 		
 		for(File existingMedFile : allMedFiles){
@@ -356,76 +362,165 @@ public class LocalData{
 			Medication existingMed = loadMedicationFromFile(existingMedFile);
 			
 			String newMedFileName = generateFileName(newMed);
-			String existingFileName = existingMedFile.getName();
+			String existingMedFileName = existingMedFile.getName();
+			
+			// Possible collision #1 (and the most common):
+
+			// An existing file representing an equivalent Medication
+			// to our new Medication also has the same filename 
+			// as what we plan to save our new Medication as
+			
+			// This would occur when trying to save a Medication already stored locally
 			
 
-			// Possible collision #1:
-			// our new Medication exists already under a different filename
+			
+			if(newMed.equals(existingMed) && newMedFileName.equals(existingMedFileName)){
+				
+				// since an equivalent Medication has been saved
+				// the existing file doesn't need to be changed
+				// and we don't need to do anything with the new Medication
+				
+				/*
+				System.out.print("[Collision 1 detected between the following]: \n");
+				System.out.print("[to be saved as " + newMedFileName + "]\n"); 
+				System.out.println(newMed);
+				System.out.print("[and]\n");
+				System.out.print("[existing file " + existingMedFileName + "]\n");
+				System.out.println(existingMed);
+				*/
+				return true;
+			}
+	
+			// Possible collision #2:
 
-			// aka if the new med is equivalent to an existing med
-			// but the filenames are not the same
-			try{
-				if(newMed.equals(existingMed) && 
-					!newMedFileName.equals(existingFileName)){
-					
-					// address collision by simply renaming the file
-					// with what the object would have been named
-					// totally fine to do since the contents are equivalent
-					
+			// An existing file represents an equivalent Medication to our
+			// new Medication, but has a file name different than what we
+			// plan on naming our new Medication
 
+			// aka our new Medication exists already under a different filename
+			
+			
+			if(newMed.equals(existingMed) && 
+				!newMedFileName.equals(existingMedFileName)){
+				
+				// We can address collision by simply renaming the existing file
+				// with what the new Medication was going to be renamed
+
+				// This is fine to do since the contents are equivalent
+				// and therefore a valid duplicate
+				
+				try{
 					// Note that this line can cause a SecurityException
+					/*
+					System.out.print("[Collision 2 detected between the following]: \n");
+					System.out.print("[to be saved as " + newMedFileName + "]\n"); 
+					System.out.println(newMed);
+					System.out.print("[and]\n");
+					System.out.print("[existing file " + existingMedFileName + "]\n");
+					System.out.println(existingMed);
+					*/
 					// or a NullPointerException
-						
+				
 					existingMedFile.renameTo(new File("./" + newMedFileName));
+					return true;
 				}
-				
-				// Possible collision #2:
-				// our new Medication's file name is taken by an existing Medication
-				// that is different in content from our new Medication
-				
-				if(!newMed.equals(existingMed) && 
-					newMedFileName.equals(existingFileName)){
-					
-					//address collision by simply renaming the existing file
-					//with a filename that will be different since it's
-					// derived from this runtime's hashcode
-
-					String anotherFileName = generateFileName(existingMed);
-
-					// Note that this line can ALSO cause a SecurityException
-					// or a NullPointerException
-					
-					existingMedFile.renameTo(new File("./" + anotherFileName));
+				catch(SecurityException e){
+					new Exception("Security manager disallowed access to an " +
+						"existing file. [Resolving collision type #2]");
 				}
-			}
-			catch(SecurityException e){
-				new Exception("Security manager disallowed access to one of the " +
-					"files.");
-			}
-			catch(NullPointerException e){
-				new Exception("The provided destination File in renameTo() is " + 
-					"null.");
+				catch(NullPointerException e){
+					new Exception("The provided destination File in " + 
+						"renameTo() is null. [Resolving collision type" +
+						" #2]");
+				}
+
+				return false; 
+				
 			}
 			
 			// Possible collision #3:
 
-			// our new Medication is equivalent to an existing Medication and they
-			// have the same file name
+			// An existing file has the same file name
+			// as what we were going to name our new Medication
+			// which is a problem because the existing file's Medication object
+			// is different from our new Medication
+			
+			if(!newMed.equals(existingMed) && 
+				newMedFileName.equals(existingMedFileName)){
+				
+				/*
+				System.out.print("[Collision 3 detected between the following]: \n");
+				System.out.print("[to be saved as " + newMedFileName + "]\n"); 
+				System.out.println(newMed);
+				System.out.print("[and]\n");
+				System.out.print("[existing file " + existingMedFileName + "]\n");
+				System.out.println(existingMed);
+				*/
 
-			// We intentionally leave this blank because it should be rewritten
+				// We can address this collision
+				// by simply renaming the existing file
+				// with a new filename
+				// that will be different than the new Medication's
+				// since it's derived from this runtime's hashcode
+				// which will give a different hashcode to different Medication
 
-			// now if Medication was refactored to remove lastReportedlyTaken
-			// then it really does not need to be rewritten
+				String anotherFileName = generateFileName(existingMed);
 
-			// so stay tuned...	
+				// Note that this line can ALSO cause a SecurityException
+				// or a NullPointerException
+				try{	
+					existingMedFile.renameTo(new File("./" + anotherFileName));
+				}
+				catch(SecurityException e){
+					new Exception("Security manager disallowed access to an " +
+						"existing file. [Resolving collision type #3]");
+				}
+				catch(NullPointerException e){
+					new Exception("The provided destination File in " + 
+						"renameTo() is null. [Resolving collision type" +
+						" #3]");
+				}
+				
+				return false;
+
+			}
+			
 		}
+
+		// if no valid duplicates were ever found after checking every other Med file
+
+		return false;
+		
 	}
 
 	// TO-DO: Finish this method, see paper notes
 
 	public static File saveMedicationToFile(Medication med) throws Exception{
 		
-		resolveAnyDuplicateFiles(med);	
+		//resolveAnyDuplicateFiles(med);
+	
+		
+		if(validDuplicateFileCheck(med)){
+			try{
+				File validDuplicate = new File("./" + generateFileName(med));
+				System.out.print("Medication already saved locally.\n");
+				return validDuplicate;
+			}
+			catch (NullPointerException e){
+				String message = "File object made in saveMedicationToFile" + 
+					"(Medication med) for an existing duplicate returned " +
+					"null!\n";
+				new Exception(message);
+				System.out.print(message);
+			}
+			
+			// was going to return a dummy file but literally all File constructors
+			// throw an exception
+			// aka a dummy file is not certain to be sent
+
+			return null;
+		}
+
 	
 		String jsonString = medicationToJSONString(med);
 
