@@ -175,16 +175,35 @@ public class MedicationData{
 	// Overwrites the provided Medication JSON file
 	// with the provided Medication instance 
 
-	public static boolean 
-	overwriteJsonFileWithNewMedication(File jsonFile, Medication newMed)
-	throws Exception{
+	public static boolean overwriteJsonFileWithNewMedication(File jsonFile,
+	Medication newMed) throws Exception{
 		
-		// Checking if provided Medication file
-		// and Medication instance are even different logically
+		// Checking if provided Medication has been saved already
+ 
+		boolean newMedSavedAlready = MedicationDataSaveHelper.
+			checkIfSavedAlready(newMed);
+
+		if(newMedSavedAlready){
+
+			String recoverable_error_message = 
+			"The provided Medication instance has already been " +
+			"saved locally, therefore the provided JSON file " + 
+			"does not need to be overwritten. Returning false " + 
+			"to overwriteJsonFileWithNewMedication.\n";
+
+			Exception recoverable_error = 
+			new Exception(recoverable_error_message);
+
+			System.err.print(recoverable_error);
+
+			return false;
+		}
+
+		// Checking if provided Medication JSON file
+		// and provided Medication instance are even different
 	
-		boolean newMedAndJsonFileAreSame =
-		MedicationDataHelper.areJsonFileAndMedicationSame(jsonFile,
-		newMed);
+		boolean newMedAndJsonFileAreSame = MedicationDataHelper.
+			areJsonFileAndMedicationSame(jsonFile,newMed);
 
 		if(newMedAndJsonFileAreSame){
 
@@ -199,9 +218,17 @@ public class MedicationData{
 			new Exception(recoverable_error_message);
 
 			System.err.print(recoverable_error);
-
 			return false;
 		}
+/*
+				     Page 3
+
+<-- CTRL + B							    CTRL + F -->
+*/
+
+
+	// OVERWRITING MEDICATION FILE WITH A NEW MEDICATION // 
+	// (contd.)
 
 		// This try-catch block is similar to the one done in 
 		// secondary save function 'writeMedicationToNewJsonFile'
@@ -220,15 +247,7 @@ public class MedicationData{
 		}
 
 
-/*
-				     Page 3
 
-<-- CTRL + B							    CTRL + F -->
-*/
-
-
-	// OVERWRITING MEDICATION FILE WITH A NEW MEDICATION // 
-	// (contd.)
 
 		// Any exceptions raised while saving
 		// in the try block on the last page
@@ -251,25 +270,6 @@ public class MedicationData{
 			return false;	
 		}
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
