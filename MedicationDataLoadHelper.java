@@ -21,6 +21,9 @@ import java.util.regex.PatternSyntaxException;
 import java.util.ArrayList;
 
 public class MedicationDataLoadHelper {
+
+	
+
 	
 	// Conversion: JSON File --> JSON-formatted String
 
@@ -93,9 +96,17 @@ public class MedicationDataLoadHelper {
 			"The File provided for jsonFileToJsonString(File " + 
 			"jsonFile) could not be found. " +
 			notification_default; 
-		
+					
+			recoverable_error_message +=
+			DefaultMedicationData.
+				DEFAULT_JSON_STRING_MESSAGE_SUFFIX +
+			"\n";
+
+			Exception recoverable_error =
 			new Exception(recoverable_error_message);
-			
+
+			System.err.print(recoverable_error_message);
+						
 			return DefaultMedicationData.DEFAULT_JSON_STRING;
 		}
 		// [2]
@@ -104,8 +115,16 @@ public class MedicationDataLoadHelper {
 			String recoverable_error_message = 
 			"Provided int in CharBuffer.allocate() is negative, " +
 			"and therefore invalid." + notification_default;
+
+			recoverable_error_message +=
+			DefaultMedicationData.
+				DEFAULT_JSON_STRING_MESSAGE_SUFFIX +
+			"\n";
 			
+			Exception recoverable_error =
 			new Exception(recoverable_error_message);
+
+			System.err.print(recoverable_error_message);
 
 			return DefaultMedicationData.DEFAULT_JSON_STRING;
 
@@ -116,8 +135,16 @@ public class MedicationDataLoadHelper {
 			String recoverable_error_message =
 			"An I/O error occurred while calling fileReader." +
 			"read(charBuffer)." + notification_default;
+
+			recoverable_error_message +=
+			DefaultMedicationData.
+				DEFAULT_JSON_STRING_MESSAGE_SUFFIX +
+			"\n";
 			
+			Exception recoverable_error =
 			new Exception(recoverable_error_message);
+
+			System.err.print(recoverable_error_message);
 
 			return DefaultMedicationData.DEFAULT_JSON_STRING;
 
@@ -129,7 +156,16 @@ public class MedicationDataLoadHelper {
 			"invoked in fileReader.read(charBuffer)." +
 			notification_default;
 
+			recoverable_error_message +=
+			DefaultMedicationData.
+				DEFAULT_JSON_STRING_MESSAGE_SUFFIX +
+			"\n";
+
+
+			Exception recoverable_error =
 			new Exception(recoverable_error_message);
+
+			System.err.print(recoverable_error_message);
 
 			return DefaultMedicationData.DEFAULT_JSON_STRING;
 
@@ -141,7 +177,15 @@ public class MedicationDataLoadHelper {
 			"cannot be used like fileReader.read("+
 			"charBuffer)" + notification_default;
 
+			recoverable_error_message +=
+			DefaultMedicationData.
+				DEFAULT_JSON_STRING_MESSAGE_SUFFIX +
+			"\n";
+
+			Exception recoverable_error =
 			new Exception(recoverable_error_message);
+
+			System.err.print(recoverable_error_message);
 
 			return DefaultMedicationData.DEFAULT_JSON_STRING;
 
@@ -175,7 +219,15 @@ public class MedicationDataLoadHelper {
 				"backup Medication object from " +
 				"jsonStringToMedication(String jsonString).\n";	
 
+			Exception recoverable_error =
 			new Exception(recoverable_error_message);
+
+			recoverable_error_message +=
+			DefaultMedicationData.
+				DEFAULT_JSON_OBJECT_MESSAGE_SUFFIX +
+			"\n";
+
+			System.err.print(recoverable_error_message);
 
 			// Handled by switching to default Medication object
 
@@ -235,7 +287,10 @@ public class MedicationDataLoadHelper {
 			recoverable_error_message += "Returning default " +
 				"Medication as an alternative.\n";	
 			
+			Exception recoverable_error =
 			new Exception(recoverable_error_message);
+
+			System.err.print(recoverable_error_message);
 				
 			return DefaultMedicationData.DEFAULT_MEDICATION;		
 		}	
