@@ -1,0 +1,5 @@
+How to run JsonSimpleTest
+
+javac Medication.java
+javac -cp "./json-simple-4.0.1.jar:./" JsonSimpleTest.java
+java  -cp "./json-simple-4.0.1.jar:./" JsonSimpleTest.java
