@@ -1,5 +1,6 @@
 import java.io.File;
 import java.util.ArrayList;
+import java.lang.IllegalArgumentException;
 
 public class MedicationDataHelper{
 
@@ -36,7 +37,10 @@ public class MedicationDataHelper{
 		DefaultMedicationData.
 		DEFAULT_MEDICATION_FILE_ERROR_MESSAGE_SUFFIX + "\n"; 
 
-		new Exception(recoverable_error_message);
+		IllegalArgumentException recoverable_error = 
+		new IllegalArgumentException(recoverable_error_message);
+
+		System.err.print(recoverable_error);
 
 		return DefaultMedicationData.DEFAULT_MEDICATION_FILE;
 	}
@@ -61,7 +65,15 @@ public class MedicationDataHelper{
 	public static boolean isMedFileByName(File file) throws Exception{
 
 		String fileName = file.getName();
-		
+	
+		// Making an exception to the file name regex for the 
+		// default Medication JSON file, as all the other default
+		// data types are derived from it
+
+		if(fileName.equals("DefaultMedication.json")){
+			return true;
+		}
+	
 		// regex pattern that matches file names
 		// "Medication_[1 or more characters].json"
 				
@@ -93,6 +105,14 @@ public class MedicationDataHelper{
 			// Skip all subdirectories
 
 			if(file.isDirectory()){continue;}
+
+			// Skip the default Medication file
+			// only used as error recovery
+
+			File defaultMedicationFile = 
+			DefaultMedicationData.DEFAULT_MEDICATION_FILE;
+
+			if(file.equals(defaultMedicationFile)){continue;}
 
 			// check if file is a Medication file
 			if(MedicationDataHelper.isMedFileByName(file)){

@@ -290,7 +290,28 @@ public class MedicationData{
 		
 	public static boolean deleteMedicationFile(File jsonFile)
 	throws Exception{
-	
+		
+		// Checking if jsonFile is the Medication file
+		// which can be passed in catch blocks to avoid
+		// crashing the application
+		
+		File defaultMedicationFile = 
+			DefaultMedicationData.DEFAULT_MEDICATION_FILE;
+
+		if(jsonFile.equals(defaultMedicationFile)){
+			
+			String recoverable_error_message = 
+			"Default Medication file is a system file that " + 
+			"cannot be deleted. Returning false.\n";
+
+			Exception recoverable_error = new Exception(
+			recoverable_error_message); 
+
+			System.err.print(recoverable_error);
+
+			return false;
+		}
+
 		try{
 			jsonFile.delete();
 			return true;
@@ -313,27 +334,6 @@ public class MedicationData{
 			return false;
 		}
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*
 				     Page 5
 
@@ -407,7 +407,7 @@ public class MedicationData{
 
 			String jsonString = 
 			MedicationDataSaveHelper.medicationToJsonString(newMed);
-
+			
 			String jsonFileName = 
 			MedicationDataSaveHelper.generateNewFileName();
 
@@ -424,7 +424,7 @@ public class MedicationData{
 			return jsonFile;
 
 		}
-
+		
 		// Any exceptions raised in the above saving process lead to
 		// a default file being returned
 
@@ -440,7 +440,7 @@ public class MedicationData{
 				
 			return DefaultMedicationData.DEFAULT_MEDICATION_FILE;
 		}
-
+		
 	}
 
 

@@ -14,6 +14,7 @@ import java.lang.IllegalArgumentException;
 import java.lang.NullPointerException;
 import java.lang.RuntimeException;
 
+
 import java.util.ArrayList;
 
 import java.util.regex.PatternSyntaxException;
@@ -22,13 +23,35 @@ import java.util.ArrayList;
 
 public class MedicationDataLoadHelper {
 
-	
+
+
 
 	
 	// Conversion: JSON File --> JSON-formatted String
 
 	public static String jsonFileToJsonString(File file)
 	throws Exception{
+
+		// Check if provided file is even a Medication file 			
+		if (!MedicationDataHelper.isMedFileByName(file)){
+			
+			String recoverable_error_message = 
+			"Provided file " + file.getName() + 
+			" is not a valid Medication JSON file. ";
+
+			recoverable_error_message +=
+			DefaultMedicationData.
+			DEFAULT_JSON_STRING_MESSAGE_SUFFIX + "\n";
+			
+			IllegalArgumentException recoverable_error = 
+			new IllegalArgumentException(recoverable_error_message);
+	
+			System.err.print(recoverable_error);	
+
+			return DefaultMedicationData.
+			DEFAULT_JSON_STRING;					
+			
+		}
 
 		String jsonString = "";
 	
@@ -39,13 +62,12 @@ public class MedicationDataLoadHelper {
 		"Returning default jsonString as an alternative.\n";
 		
 		try{
-			// This line can cause a FileNotFound exception [1]
-
+			// This line can cause a FileNotFound exception
 			FileReader fileReader = new FileReader(file);
 
 			// JSON files for Medications are typically <150 chars
 
-			// This line can cause an IllegalArgument exception [2]
+			// This line can cause an IllegalArgument exception
 
 			CharBuffer charBuffer = CharBuffer.allocate(300);
 
@@ -60,7 +82,7 @@ public class MedicationDataLoadHelper {
 			while(charsReadInLastAttempt != -1){
 				
 				// Note that this ONE line can cause
-				// any of the following to occur [3]:
+				// any of the following to occur:
 				// 	-IOException
 				// 	-NullPointerException
 				//	-ReadOnlyBufferException
@@ -89,99 +111,39 @@ public class MedicationDataLoadHelper {
 			return jsonString;	
 
 		}
-		// [1]
-		catch(FileNotFoundException e){
+		
+		// The only exception in the try-catch block
+		// that is likely to occur is an IO Exception,
+		
+		// Medication files are validated before creating a FileReader
+		// so FileNotFound Exceptions would not occur
+		
+		// The integer 300 is hard-coded into the CharBuffer we create
+		// which is a valid argument so an IllegalArgument Exception
+		// would not occur
 
-			String recoverable_error_message = 
-			"The File provided for jsonFileToJsonString(File " + 
-			"jsonFile) could not be found. " +
-			notification_default; 
-					
-			recoverable_error_message +=
-			DefaultMedicationData.
-				DEFAULT_JSON_STRING_MESSAGE_SUFFIX +
-			"\n";
+		// CharBuffer instance is unlikely to become null for the
+		// aforementioned reason
+		// Therefore providing to a FileReader
+		// for its read() method
+		// is unlikely to invoke a NullPointerException
 
-			Exception recoverable_error =
-			new Exception(recoverable_error_message);
+		// and the CharBuffer provided 
+		// is not explicitly set to ReadOnly
 
-			System.err.print(recoverable_error_message);
-						
-			return DefaultMedicationData.DEFAULT_JSON_STRING;
-		}
-		// [2]
-		catch(IllegalArgumentException e){
-
-			String recoverable_error_message = 
-			"Provided int in CharBuffer.allocate() is negative, " +
-			"and therefore invalid." + notification_default;
-
-			recoverable_error_message +=
-			DefaultMedicationData.
-				DEFAULT_JSON_STRING_MESSAGE_SUFFIX +
-			"\n";
-			
-			Exception recoverable_error =
-			new Exception(recoverable_error_message);
-
-			System.err.print(recoverable_error_message);
-
-			return DefaultMedicationData.DEFAULT_JSON_STRING;
-
-		}
-		// [3]
+		// so its unlikely to cause a ReadOnlyBuffer Exception
+ 
 		catch(IOException e){
 
 			String recoverable_error_message =
 			"An I/O error occurred while calling fileReader." +
-			"read(charBuffer)." + notification_default;
+			"read(charBuffer). " + notification_default;
 
 			recoverable_error_message +=
 			DefaultMedicationData.
 				DEFAULT_JSON_STRING_MESSAGE_SUFFIX +
 			"\n";
 			
-			Exception recoverable_error =
-			new Exception(recoverable_error_message);
-
-			System.err.print(recoverable_error_message);
-
-			return DefaultMedicationData.DEFAULT_JSON_STRING;
-
-		}
-		catch(NullPointerException e){
-
-			String recoverable_error_message = 
-			"charBuffer is a null object, which cannot be " + 
-			"invoked in fileReader.read(charBuffer)." +
-			notification_default;
-
-			recoverable_error_message +=
-			DefaultMedicationData.
-				DEFAULT_JSON_STRING_MESSAGE_SUFFIX +
-			"\n";
-
-
-			Exception recoverable_error =
-			new Exception(recoverable_error_message);
-
-			System.err.print(recoverable_error_message);
-
-			return DefaultMedicationData.DEFAULT_JSON_STRING;
-
-		}
-		catch(ReadOnlyBufferException e){
-
-			String recoverable_error_message = 
-			"charBuffer is set to read-only, and therefore " + 
-			"cannot be used like fileReader.read("+
-			"charBuffer)" + notification_default;
-
-			recoverable_error_message +=
-			DefaultMedicationData.
-				DEFAULT_JSON_STRING_MESSAGE_SUFFIX +
-			"\n";
-
 			Exception recoverable_error =
 			new Exception(recoverable_error_message);
 

@@ -7,6 +7,9 @@ import java.util.HashSet;
 
 import java.util.regex.PatternSyntaxException;
 
+import java.lang.IllegalArgumentException;
+
+
 public class MedicationDataSaveHelper {
 
 
@@ -22,14 +25,18 @@ public class MedicationDataSaveHelper {
 			"passed to getFileNumber(File file). Returning -1 " +
 			"as a file number.\n";
 	
-			new Exception(recoverable_error_message);
+			IllegalArgumentException recoverable_error =
+			new IllegalArgumentException(
+				recoverable_error_message);
+
+			System.err.print(recoverable_error);
 
 			return -1;	
 	
 		}
 	
 		String fileName = file.getName();
-		
+	
 		// regex pattern that matches the characters surrounding
 		// the file number ('_' and '.')
 

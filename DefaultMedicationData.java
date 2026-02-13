@@ -33,8 +33,11 @@ public class DefaultMedicationData {
 				"could not be initialized! Check if file " +
 				"DefaultMedication.json exists in the " +
 				"current folder.\n";
-
-			new RuntimeException(critical_error_message); 
+			
+			RuntimeException critical_error = 
+			new RuntimeException(critical_error_message);
+			
+			System.err.print(critical_error);
 		}
 
 		DEFAULT_MEDICATION_FILE = tempFileVariable;
@@ -60,7 +63,12 @@ public class DefaultMedicationData {
 
 			String critical_error_message = "Default Medication " +
 				"object could not be initialized!\n";
-			new RuntimeException(critical_error_message); 
+
+			RuntimeException critical_error = 
+			new RuntimeException(critical_error_message);
+			
+			System.err.print(critical_error);
+ 
 		}
 
 		DEFAULT_MEDICATION = tempMedicationVariable; 
@@ -84,8 +92,12 @@ public class DefaultMedicationData {
 
 			String critical_error_message = "Default JSON-"+
 				"formatted String could not initialized!\n";
-			
+
+			RuntimeException critical_error = 
 			new RuntimeException(critical_error_message);
+			
+			System.err.print(critical_error);
+			
 		}
 
 		DEFAULT_JSON_STRING = tempJsonString;
@@ -109,7 +121,12 @@ public class DefaultMedicationData {
 
 			String critical_error_message = "Default JsonObject " +
 				"could not be initialized!\n";
-			new RuntimeException(critical_error_message); 
+
+			RuntimeException critical_error = 
+			new RuntimeException(critical_error_message);
+			
+			System.err.print(critical_error);
+
 		}
 
 		DEFAULT_JSON_OBJECT = tempJsonObject; 
