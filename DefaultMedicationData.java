@@ -20,7 +20,7 @@ public class DefaultMedicationData {
 	
 	
 	
-	This class constains backup data variables meant to be used
+	This class contains backup data variables meant to be used
 	when unchecked exceptions are raised during the typical save
 	and load process.
 

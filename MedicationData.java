@@ -18,16 +18,16 @@ public class MedicationData{
 
 	5	DELETE		deleteMedicationFile(File jsonFile)			
 	6-7	save new	saveMedicationToNewJsonFile(Medication newMed)
+	
+	
+	
+	
+	This class contains the primary save and load functionality
+	for Medication objects.
 
-
-
+	This allows Medication data to be stored and accessed locally.
 
 	*/
-
-
-
-
-
 
 
 
