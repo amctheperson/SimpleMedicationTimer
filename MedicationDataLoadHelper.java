@@ -4,140 +4,135 @@ import com.github.cliftonlabs.json_simple.JsonException;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import java.nio.CharBuffer;
-import java.nio.ReadOnlyBufferException;
-
-import java.lang.IllegalArgumentException;
-import java.lang.NullPointerException;
-import java.lang.RuntimeException;
-
-
-import java.util.ArrayList;
-
-import java.util.regex.PatternSyntaxException;
 
 import java.util.ArrayList;
 
 public class MedicationDataLoadHelper {
 
 
+	/*
 
+	PAGE	PURPOSE		FUNCTION SIGNATURE
 
+	1-2	JSON File	jsonFileToJsonString(File jsonFile)
+		-->
+		JSON String
+
+	3	JSON String	jsonStringToJsonObject(String jsonString)
+		-->
+		JSON Object
+
+	4-5	JSON Object	jsonObjectToMedication(JsonObject jsonObject)	
+		-->
+		Medication	
 	
-	// Conversion: JSON File --> JSON-formatted String
+	
+	
+	
+	This class contains functions that convert JSON-related data types
+	into each other.
 
-	public static String jsonFileToJsonString(File file)
+	These functions are primarily for assisting in the loading a Medication
+	JSON file into a Medication feature of the MedicationData class.
+
+	*/
+
+
+
+
+
+
+
+
+
+
+
+/*
+				     Page 0
+
+								    CTRL + F -->
+*/
+
+
+	// CONVERTING MEDICATION JSON FILE TO JSON-FORMATTED STRING
+
+	// Takes the provided Medication JSON File
+	// and reads it into a returnable JSON-formatted String
+
+	// If any IO exception occurs while reading the file into a String
+	// returns the default JSON-formatted String
+
+	// Note: The Medication JSON file provided to this function
+	// should be verified first
+	// via MedicationDataHelper.isMedFileByName(File file)
+	
+	public static String jsonFileToJsonString(File jsonFile)
 	throws Exception{
-
-		// Check if provided file is even a Medication file 			
-		if (!MedicationDataHelper.isMedFileByName(file)){
-			
-			String recoverable_error_message = 
-			"Provided file " + file.getName() + 
-			" is not a valid Medication JSON file. ";
-
-			recoverable_error_message +=
-			DefaultMedicationData.
-			DEFAULT_JSON_STRING_MESSAGE_SUFFIX + "\n";
-			
-			IllegalArgumentException recoverable_error = 
-			new IllegalArgumentException(recoverable_error_message);
-	
-			System.err.print(recoverable_error);	
-
-			return DefaultMedicationData.
-			DEFAULT_JSON_STRING;					
-			
-		}
-
+		
 		String jsonString = "";
-	
-		// Suffix appended to all recoverable_error_message variables
-		// inside all catch blocks following the below try block
-	
-		String notification_default = 
-		"Returning default jsonString as an alternative.\n";
 		
 		try{
-			// This line can cause a FileNotFound exception
-			FileReader fileReader = new FileReader(file);
+			FileReader jsonFileReader = new FileReader(jsonFile);
 
 			// JSON files for Medications are typically <150 chars
-
-			// This line can cause an IllegalArgument exception
+			// therefore sizing the CharBuffer to 300 characters
+			// is sufficient
 
 			CharBuffer charBuffer = CharBuffer.allocate(300);
 
-			// Keeps track of how many characters were read
-			// in each pass of fileReader.read(somecharBuffer)
+			// This variable keeps track of
+			// how many characters were read into charBuffer
+			// by jsonFileReader
 			
 			int charsReadInLastAttempt = 0;
 			
-			// When -1 characters are read
-			// the end of file has been reached
+			// When -1 characters have been read in an attempt
+			// the end of jsonFile has been reached
 
 			while(charsReadInLastAttempt != -1){
 				
-				// Note that this ONE line can cause
-				// any of the following to occur:
-				// 	-IOException
-				// 	-NullPointerException
-				//	-ReadOnlyBufferException
+				// This line can cause an IO Exception
 
 				charsReadInLastAttempt = 
-					fileReader.read(charBuffer);
+					jsonFileReader.read(charBuffer);
 
 				jsonString += charBuffer.toString();
 
 				charBuffer.clear();
 			}
 			
-			fileReader.close();
-			
-			// Sanitizing recently read-from-file string
-			// of control characters (aka non-printable characters)
-			// that may trip up any function not expecting them
+			jsonFileReader.close();
 
-			// This line can cause a PatternSyntaxException
-			// which...has already been caught
-			//despite no explicit catch of it
 
-			// not entirely sure why, will look into some other time
+/*
+				     Page 1
 
+<-- CTRL + B							    CTRL + F -->
+*/
+
+
+	// CONVERTING MEDICATION JSON FILE TO JSON-FORMATTED STRING
+	// (contd.)	
+	
+			// Sanitize jsonString of control characters
+			// (non-printable characters)
+						
 			jsonString = jsonString.replaceAll("[\\p{C}]", "");					
 			return jsonString;	
 
 		}
 		
-		// The only exception in the try-catch block
-		// that is likely to occur is an IO Exception,
-		
-		// Medication files are validated before creating a FileReader
-		// so FileNotFound Exceptions would not occur
-		
-		// The integer 300 is hard-coded into the CharBuffer we create
-		// which is a valid argument so an IllegalArgument Exception
-		// would not occur
-
-		// CharBuffer instance is unlikely to become null for the
-		// aforementioned reason
-		// Therefore providing to a FileReader
-		// for its read() method
-		// is unlikely to invoke a NullPointerException
-
-		// and the CharBuffer provided 
-		// is not explicitly set to ReadOnly
-
-		// so its unlikely to cause a ReadOnlyBuffer Exception
+		// If jsonFileReader raises an IO Exception
+		// return the default JSON-formatted String
  
 		catch(IOException e){
 
 			String recoverable_error_message =
-			"An I/O error occurred while calling fileReader." +
-			"read(charBuffer). " + notification_default;
+			"An I/O error occurred while calling jsonFileReader." +
+			"read(charBuffer). ";
 
 			recoverable_error_message +=
 			DefaultMedicationData.
@@ -153,8 +148,37 @@ public class MedicationDataLoadHelper {
 
 		}
 	}	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+				     Page 2
+
+<-- CTRL + B							    CTRL + F -->
+*/
+
+
+	// CONVERTING JSON-FORMATTED STRING TO JSON OBJECT HASHMAP
 	
-	// Conversion: JSON-formatted String --> JsonObject hashmap
+	// Takes provided JSON-formatted String
+	// and loads into JSONObject instance
+	// whose data can be accessed like a Hashmap
+
+	// Note: The provided jsonString should be a JSON-formatted String
+	// otherwise a JsonException will be raised by this function
+	// and the default JSON Object will be returned 
 
 	public static JsonObject jsonStringToJsonObject(String jsonString){
 
@@ -171,8 +195,8 @@ public class MedicationDataLoadHelper {
 		}
 		catch(JsonException je){
 
-			// JsonException occurs whenever jsonString
-			// is not in a valid JSON format
+			// If jsonString is not in a valid JSON format
+			// return the default JSONObject
 
 			String 	recoverable_error_message = 
 				"String provided for Jsoner in " + 
@@ -191,28 +215,41 @@ public class MedicationDataLoadHelper {
 
 			System.err.print(recoverable_error_message);
 
-			// Handled by switching to default Medication object
-
 			return DefaultMedicationData.DEFAULT_JSON_OBJECT;
 		}	
 	}
 
 
-	// Conversion: JsonObject hashmap --> Medication instance
+/*
+				     Page 3
+
+<-- CTRL + B							    CTRL + F -->
+*/
+	
+	
+	// CONVERTING JSON OBJECT HASHMAP TO MEDICATION INSTANCE // 
+
+	// Takes a provided JSONObject instance
+	// and loads its class properties that correlate to a Medication object
+	// into a returnable new Medication instance 
 
 	public static Medication jsonObjectToMedication(JsonObject jsonObject)
 	throws Exception {
 
-		// Check if the jsonObject has all the required properties
-		// of a Medication object 
-		
+		// Check if jsonObject has all the required properties
+		// of a Medication object first 
+	
+		// If it does not, raise a checked Exception
+		// and return the default Medication
+	
 		String[] required_properties = 	{
 						"name", "dosage", "type", 
 						"totalHoursOfClarity"
 				  		};
 		
-		// For keeping track of any missing properties
+		// This keeps track of any missing properties
 		// not seen in the jsonObject hashmap keys
+		// (mainly for debugging)
 		
 		ArrayList<String> missing_properties = new ArrayList<String>();
 
@@ -224,14 +261,9 @@ public class MedicationDataLoadHelper {
 					
 			}
 		}
-
-		// If any properties added to missing_properties
-
+				
 		if (missing_properties.size() > 0){
-			
-			// then provided JsonObject is not valid
-			// so notify user about the missing properties
-			
+				
 			String recoverable_error_message =
 				"Provided JsonObject for " + 
 				"jsonObjectToMedication(JsonObject jsonObject" +
@@ -244,7 +276,16 @@ public class MedicationDataLoadHelper {
 
 			}
 			
-			// and return default Medication as a backup
+		
+/*
+				     Page 4
+
+<-- CTRL + B							    CTRL + F -->
+*/	
+
+
+	// CONVERTING JSON OBJECT HASHMAP TO MEDICATION INSTANCE // 
+	// (contd.)
 
 			recoverable_error_message += "Returning default " +
 				"Medication as an alternative.\n";	
@@ -253,35 +294,48 @@ public class MedicationDataLoadHelper {
 			new Exception(recoverable_error_message);
 
 			System.err.print(recoverable_error_message);
-				
 			return DefaultMedicationData.DEFAULT_MEDICATION;		
 		}	
-			
-		// Provided JsonObject has been validated from here on out
 	
-	
-		// Pull class properties from the JSONObject
+		// jsonObject has been validated
+		// to load into a new Medication instance		
 
-		String loaded_name = jsonObject.get("name").toString();	
-		String loaded_dosage = jsonObject.get("dosage").toString();
-		String loaded_type = jsonObject.get("type").toString();
-		
-		// Temp var made to shorten expression after the following line
+		String loaded_name = jsonObject.get("name").toString();
 	
+		String loaded_dosage = jsonObject.get("dosage").toString();
+
+		String loaded_type = jsonObject.get("type").toString();
+			
 		String loaded_totalHoursOfClarity_string =
 			jsonObject.get("totalHoursOfClarity").toString();
-		 
+	 
 		double loaded_totalHoursOfClarity = 
 			Double.valueOf(loaded_totalHoursOfClarity_string);
 		
-		// Then create new Medication object with these class properties
-
-		Medication newMed = new Medication(loaded_name, loaded_dosage,
-			loaded_type, loaded_totalHoursOfClarity);
-
-		// and then return said Medication
+		Medication newMed = new Medication(
+						loaded_name,
+						loaded_dosage,
+						loaded_type,
+						loaded_totalHoursOfClarity
+						);
 
 		return newMed;	
 	}
 
+
+
+
+
+
+
+
+
+
+
+
+/*
+				     Page 5
+
+<-- CTRL + B							      
+*/
 }
