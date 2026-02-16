@@ -2,48 +2,291 @@ import java.util.Objects;
 
 public class Medication{
 
-	/* Instance variables */
+
+	/*
+	
+	PAGE	CONTENTS
+
+	1	Instance Variables
+
+	2	Constructor
+
+	3	Accessor Methods
+
+	4	Modifier Methods
+
+	5	toString() Function
+
+	6-7	equals(Object o) Function
+	
+	8	hashcode() Function	
+	
+
+	
+	This class defines the Medication object, used to represent
+	the individual ADHD medications that the user takes.
+	
+	*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+				     Page 0
+
+								    CTRL + F -->
+*/
+
+
+	// INSTANCE VARIABLES // 
+	
+
+	// Name of the medication
 
 	private String name;
+
+
+	// Dosage of the medication
+
+	// Units of measurement should be included (i.e. "10mg")
+
 	private String dosage;
+
+
+	// Type of dosage (i.e. "XR")
+	
 	private String type;
+
+
+	// Hours of mental clarity this medication provides the user
+
+	// User-determined
+
 	private double totalHoursOfClarity;
 
-	/* Constructor */
 
-	public Medication(String n, String d, String t, double thoc){
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+				     Page 1
+
+<-- CTRL + B							    CTRL + F -->
+*/
+
+
+	// CONSTRUCTOR //
+
+
+	public Medication(
+				String n,
+				String d,
+				String t,
+				double thoc
+	){
+
 		name = n;
+
 		dosage = d;
+
 		type = t;
+
 		totalHoursOfClarity = thoc;
 	}
 
-	/* Accessor methods aka getter methods */	
-	
-	public String getName(){return name;}
-	public String getDosage(){return dosage;}
-	public String getType(){return type;}
-	public double getTotalHoursOfClarity(){return totalHoursOfClarity;}
-	
-	// Note to self that this accessor method is slightly different in the sense
-	// that it is a composite of the name, dosage, and type properties of
-	// the class that will be probably be called from the front-end
 
-	public String getCompleteInfo(){return name + " " +  dosage + " " + 
-		type;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+				     Page 2
+
+<-- CTRL + B							    CTRL + F -->
+*/
+
+
+	// ACCESSOR METHODS // 
+
+	
+	public String getName(){
+
+		return name;
+
+	}
+
+	public String getDosage(){
+
+		return dosage;
+
+	}
+	
+	public String getType(){
+
+		return type;
+
+	}
+
+	public double getTotalHoursOfClarity(){
+
+		return totalHoursOfClarity;
+
+	}
+
+	// This non-boilerplate accessor method returns a composite of
+	// the name, dosage, and type properties of the class instance
+	
+	// (Note to self: This will likely get called a lot from the front-end)
 		
-	/* Modifier methods aka setter methods */
+	public String getCompleteInfo(){
 
-	public void setName(String new_name){name = new_name;}
-	public void setDosage(String new_dosage){dosage = new_dosage;}
-	public void setType(String new_type){type = new_type;}
+		return name + " " +  dosage + " " + type;
+
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+				     Page 3
+
+<-- CTRL + B							    CTRL + F -->
+*/
+	
+
+	// MODIFIER METHODS // 
+
+
+	public void setName(String new_name){
+	
+		name = new_name;
+
+	}
+
+	public void setDosage(String new_dosage){
+
+		dosage = new_dosage;
+
+	}
+
+	public void setType(String new_type){
+
+		type = new_type;
+
+	}
+
 	public void setTotalHoursOfClarity(double new_total_hoc){
-		totalHoursOfClarity = new_total_hoc;}	
+
+		totalHoursOfClarity = new_total_hoc;
+
+	}	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+				     Page 4
+
+<-- CTRL + B							    CTRL + F -->
+*/
 	
-	/* toString function */
-	
-	// Note to self that this toString function overrides the default object toString
-	// to print the address in memory and makes the object "printable"
+
+	// TO STRING FUNCTION // 
+
 
 	@Override
 	public String toString(){
@@ -51,59 +294,222 @@ public class Medication{
 		String printable = "Behold, a Medication object!\n";
 
 		printable += 
-				"\tname: " + name + "\n" +
-				"\tdosage: " + dosage + "\n" + 
-				"\ttotalHoursOfClarity: " + 
-				Double.toString(totalHoursOfClarity) + "\n" +
-				"\ttype: " + type + "\n";
+				"\tName: " + name + "\n" +
+				"\tDosage: " + dosage + "\n" +
+				"\tType: " + type + "\n" +
+				"\tTotal Hours Of Clarity: " + 
+				Double.toString(totalHoursOfClarity) + "\n";
 
 		return printable; 
 	}
-	
-	/* equals and hashCode functions */
 
-	// Note to self that this function overrides the default equals function for objects
-	// which checks if they point to the same memory address
 
-	// We want to override this because we can check equality of two Medicine objects if their
-	// properties are equivalent
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+				     Page 5
+
+<-- CTRL + B							    CTRL + F -->
+*/
+
+
+	// EQUALS FUNCTION // 		
+
 	
 	@Override
 	public boolean equals(Object o){
 		
-		if(o == this){return true;}
-		
-		// check if other object is even a Medication object, also checks for null object
-		if(!(o instanceof Medication)){return false;}
+		// Accept equivalency if the provided object
+		// is the Medication instance it is comparing itself to
 
-		Medication otherMed = (Medication) o;
-		
-		if(Objects.isNull(otherMed)){
-			return false;
+		if(o == this){
+
+			return true;
+
 		}
 		
-		// Note to self that since the class property totalHoursOfClarity is a double
-		// and therefore a primitive, we can compare the property of two Medication 
-		// instances via equals signs aka through memory address codes
+		// Reject equivalency if the provided object
+		// is not a Medication instance
+		
+		if(!(o instanceof Medication)){
+
+			return false;
+
+		}
+
+		// Provided object can be validly casted
+		// to a Medication instance now
+
+		Medication otherMed = (Medication) o;
+
+		// Reject equivalency if provided Medication is a null object
+		
+		if(Objects.isNull(otherMed)){
+
+			return false;
+
+		}
 	
-		return name.equals(otherMed.getName()) && dosage.equals(otherMed.getDosage()) &&
-		totalHoursOfClarity == otherMed.getTotalHoursOfClarity() &&
-		type.equals(otherMed.getType()); 
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+				     Page 6
+
+<-- CTRL + B							    CTRL + F -->
+*/
+
+
+	// EQUALS FUNCTION //
+	// (contd.)        //
+
+
+		// After all edge cases have been addressed
+
+		// Evaluate the equivalency of the two Medication instances
+		// based off the equivalency of their class properties
+				
+		String otherMedName = otherMed.getName();
+
+		String otherMedDosage = otherMed.getDosage();
+
+		String otherMedType = otherMed.getType();
+
+		double otherMed_thoc = otherMed.getTotalHoursOfClarity();
+		
+		return 	name.equals(otherMedName) &&
+
+			dosage.equals(otherMedDosage) &&
+
+			type.equals(otherMedType) &&
+
+			// Medication class property totalHoursOfClarity
+			// is type double, therefore a primitive
+			// so comparing their memory address codes is valid
+
+			totalHoursOfClarity == otherMed_thoc;
 
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+				     Page 7
+
+<-- CTRL + B							    CTRL + F -->
+*/
+
 	
-	// Note to self that this function overrides the default hashCode function for objects
-	// which we only have to do because we are overriding the equals functionality 
-	// and therefore we should make sure the hashCode function also makes 
-	// the hashcodes of two equivalent Medicine objects the same
+	// HASHCODE FUNCTION //
+	
+	// Function derived from this StackOverflow post
+
+	// https://stackoverflow.com/questions/18965374/
+	// overriding-hashcode-in-java
 		
 	@Override
 	public int hashCode(){
+
 		int result = 1;
-		result = 31 * result + (name == null ? 0 : name.hashCode());
-		result = 31 * result + (dosage == null ? 0 : dosage.hashCode());
-		result = 31 * result + ((Double) totalHoursOfClarity == null ? 0 : Double.hashCode(totalHoursOfClarity));
+
+		result = 31 * result + 
+		(name == null ? 0 : name.hashCode());
+
+		result = 31 * result +
+		(dosage == null ? 0 : dosage.hashCode());
+
+		result = 31 * result + 
+		((Double) totalHoursOfClarity == null ? 0 : 
+		Double.hashCode(totalHoursOfClarity));
+
 		result = 31 * result + (type == null ? 0 : type.hashCode());
 		return result;
-	}		
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+				     Page 8
+
+<-- CTRL + B							    
+*/
+	
 }
