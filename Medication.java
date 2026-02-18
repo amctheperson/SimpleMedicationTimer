@@ -49,7 +49,6 @@ public class Medication{
 
 
 
-
 /*
 				     Page 0
 
@@ -106,7 +105,6 @@ public class Medication{
 
 
 
-
 /*
 				     Page 1
 
@@ -132,7 +130,6 @@ public class Medication{
 
 		totalHoursOfClarity = thoc;
 	}
-
 
 
 
@@ -220,14 +217,13 @@ public class Medication{
 
 
 
-
 /*
 				     Page 3
 
 <-- CTRL + B							    CTRL + F -->
 */
-	
 
+	
 	// MODIFIER METHODS // 
 
 
@@ -277,7 +273,6 @@ public class Medication{
 
 
 
-
 /*
 				     Page 4
 
@@ -302,7 +297,6 @@ public class Medication{
 
 		return printable; 
 	}
-
 
 
 
@@ -391,7 +385,6 @@ public class Medication{
 
 
 
-
 /*
 				     Page 6
 
@@ -448,7 +441,6 @@ public class Medication{
 
 
 
-
 /*
 				     Page 7
 
@@ -481,7 +473,6 @@ public class Medication{
 		result = 31 * result + (type == null ? 0 : type.hashCode());
 		return result;
 	}
-
 
 
 

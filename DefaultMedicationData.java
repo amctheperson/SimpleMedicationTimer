@@ -49,7 +49,6 @@ public class DefaultMedicationData {
 
 
 
-
 /*
 				     Page 0
 
@@ -105,7 +104,6 @@ public class DefaultMedicationData {
 
 
 
-
 /*
 				     Page 1
 
@@ -143,7 +141,6 @@ public class DefaultMedicationData {
 
 	protected static final String DEFAULT_MEDICATION_ERROR_MESSAGE_SUFFIX = 
 	"Returning the default Medication instance as an alternative.";
-
 
 
 
@@ -219,7 +216,6 @@ public class DefaultMedicationData {
 
 
 
-
 /*
 				     Page 3
 
@@ -256,7 +252,6 @@ public class DefaultMedicationData {
 	protected static final String DEFAULT_JSON_OBJECT_MESSAGE_SUFFIX = 
 	"Returning a JSONObject hashmap representing the default Medication " + 
 	"instance as an alternative.";
-
 
 
 
