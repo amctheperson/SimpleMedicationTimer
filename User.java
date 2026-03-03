@@ -1,12 +1,12 @@
-import java.util.Objects;
 import java.util.Arrays;
-
-
 import java.util.HashMap;
-import java.time.LocalDateTime;
 import java.util.Iterator;
+import java.util.Objects;
+
+import java.time.LocalDateTime;
+import java.time.DateTimeException;
+	
 import java.time.format.DateTimeFormatter;
-import java.time.DateTimeException;	
 
 public class User{
 
@@ -22,24 +22,24 @@ public class User{
 
 	4	Modifier Methods
 
-	5	toString() Function
+	5	equals(Object o)
 
-	6-7	equals(Object o) Function
+	6	toString()
 	
-	8	hashcode() Function	
+	7-8	toString() helper functions
+
+	7		getDailyRoutineString()
+	8		getWhenLastTakenString()
+	
+	9	hashcode() -- equals() helper function	
 	
 
 	
-	This class defines the Medication object, used to represent
-	the individual ADHD medications that the user takes.
+	This class defines the User object, used to represent
+	how and when the user of this application takes their ADHD
+	medication(s).
 	
 	*/
-
-
-
-
-
-
 
 
 
@@ -285,6 +285,63 @@ public class User{
 */
 
 
+	// EQUALS FUNCTION //
+
+	
+	@Override
+	public boolean equals(Object o){
+		
+		// Accept equivalency if comparing to itself, the User instance
+
+		if(o == this){
+			return true;
+		}
+		
+		// Reject equivalency if comparing to a non-User object
+		
+		if(!(o instanceof User)){
+			return false;
+		}
+
+		// Provided Object is validated as User instance
+		// Can be casted to User instance now
+
+		User otherUser = (User) o;
+
+		// Reject equivalency though if User casting returns null User
+		
+		if(Objects.isNull(otherUser)){
+			return false;
+		}
+
+		// After all edge cases have been addressed
+
+		// Evaluate the equivalency of the two User instances
+		// based off the equivalency of their class properties
+
+		String otherUserName = otherUser.getName();
+	
+		Medication[] otherUserDR = otherUser.getDailyRoutine();
+	
+		HashMap<Medication, LocalDateTime> otherUserWLT =
+		otherUser.getWhenLastTaken();
+			
+		return 	name.equals(otherUserName) &&
+
+			Arrays.deepEquals(dailyRoutine, otherUserDR) &&
+
+			whenLastTaken.equals(otherUserWLT);
+
+
+	}
+
+/*
+				     Page 5
+
+<-- CTRL + B							    CTRL + F -->
+*/
+
+
 	// TO STRING FUNCTION //  
 
 	
@@ -293,17 +350,34 @@ public class User{
 
 		String user_string = "User defined as follows:\n\n";
 
-		user_string += "Name: " + name + "\n\n";
+		user_string += "Name: " + name 
+				+ "\n\n";
 
-		user_string += "Daily Routine of Medications: " + "\n\n" + 
-				getDailyRoutineString() + "\n\n";
+		user_string += "Daily Routine of Medications: " + 
+				"\n\n" + 
+				getDailyRoutineString() + 
+				"\n\n";
 
 		user_string += "When Each Of User's Medications Was Last " + 
-				"Taken:\n\n";
-		try{
+				"Taken: " + 
+				"\n\n";
+
+		try {
+	
 			user_string += getWhenLastTakenString();
+
 		} catch (Exception e){
-			System.out.print("nah son!\n");
+	
+			// Try-catch used to handle possible exceptions
+			// from helper function getWhenLastTakenString()
+			// because a function that overrides toString()
+			// cannot throw an Exception (because toString()
+			// does not throw one)
+ 
+			String error_message = "Helper function " + 
+			"getWhenLastTaken() returned an Exception, returning " +
+			"default toString for the whenLastTaken hashmap " +
+			"as an alternative.\n";
 			
 			user_string += whenLastTaken.toString();
 		}
@@ -318,32 +392,19 @@ public class User{
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*
-				     Page 5
+				     Page 6
 
 <-- CTRL + B							    CTRL + F -->
 */
 
 
 	// Class property dailyRoutine toString Function //
-	// (this is a secondary function)
+	// This secondary function assists toString()
+
+
+	// Returns String representing contents of class property dailyRoutine,
+	// which is an array of Medication objects
 
 	public String getDailyRoutineString(){
 		
@@ -388,19 +449,20 @@ public class User{
 
 
 
-
-
-
-
 /*
-				     Page 6
+				     Page 7
 
 <-- CTRL + B							    CTRL + F -->
 */
 
 
 	// Class property whenLastTaken toString Function //
-	// (this is a secondary function)
+	// This is secondary function assists toString()
+
+
+	// Returns String representing
+	// contents of class property whenLastTaken,
+	// which is a HashMap containing pairs of Medication and LocalDateTime
 
 	public String getWhenLastTakenString() throws Exception{
 
@@ -415,10 +477,16 @@ public class User{
 
 			LocalDateTime takenMedTime = 
 			whenLastTaken.get(takenMed);
+			
+			// Could technically throw an IllegalArgumentException
 
 			DateTimeFormatter display_format = 
 			DateTimeFormatter.ofPattern("MMM dd yyyy h':'mm' 'a");
 
+			// Throws a DateTimeException
+			// if any error while printing
+			// the takenMed LocalDateTime occurs
+		
 			String takenMedTimeString =  
 			takenMedTime.format(display_format);
 
@@ -436,76 +504,8 @@ public class User{
 
 		return whenLastTakenString;
 
-	}	
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-				     Page 7
-
-<-- CTRL + B							    CTRL + F -->
-*/
-
-
-	// EQUALS FUNCTION //
+	}
 	
-	@Override
-	public boolean equals(Object o){
-		
-		// Accept equivalency if the provided object
-		// is the User instance it is comparing itself to
-
-		if(o == this){
-
-			return true;
-
-		}
-		
-		// Reject equivalency if the provided object
-		// is not a User instance
-		
-		if(!(o instanceof User)){
-
-			return false;
-
-		}
-
-		// Provided object can be validly casted
-		// to a User instance now
-
-		User otherUser = (User) o;
-
-		// Reject equivalency if provided User is a null object
-		
-		if(Objects.isNull(otherUser)){
-
-			return false;
-
-		}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*
 				     Page 8
 
@@ -513,65 +513,8 @@ public class User{
 */
 
 
-	// EQUALS FUNCTION //
-	// (contd.)	
-	
-		// After all edge cases have been addressed
-
-		// Evaluate the equivalency of the two User instances
-		// based off the equivalency of their class properties
-
-		String otherUserName = otherUser.getName();
-	
-		Medication[] otherUserDR = otherUser.getDailyRoutine();
-	
-		HashMap<Medication, LocalDateTime> otherUserWLT =
-		otherUser.getWhenLastTaken();
-			
-		return 	name.equals(otherUserName) &&
-
-			// Note to self:
-			
-			// Because there is no non-static equals() method
-			// for the Arrays class, calling equals() from
-			// a non-static context of an Arrays instance
-			// leads to the Object class default equals()
-			// which is to compare references in memory
-			// which is what == does to non-primitives
-
-			// call Arrays.equals(obj, obj_2) instead
-			// however note that this will check if each
-			// matching pair of elements in the two arrays
-			// are the same reference, not contents
-			
-			// Arrays.deepEquals(obj, obj_2) does this
-
-			// it recursively checks the contents of each
-			// object in the array 
-
-			// We don't need this in the HashMaps because
-			// mutable keys aka arrays are not allowed
-
-			// ...i think	
-
-			// but not HashMaps of Medications, LocalDateTime??	
-			
-
-			Arrays.deepEquals(dailyRoutine, otherUserDR) &&
-			//dailyRoutine.equals(otherUserDR) &&
-
-			whenLastTaken.equals(otherUserWLT);
-
-	}
-/*
-				     Page 9
-
-<-- CTRL + B							    CTRL + F -->
-*/
-
-
 	// Hashcode Class Function //
-	// (This is a secondary function)
+	// This secondary function assists equals()
 
 	 
 	// Function derived from this StackOverflow post
@@ -604,5 +547,25 @@ public class User{
 	}
 
 
-	 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+				     Page 9
+
+<-- CTRL + B							    
+*/	 
 }
