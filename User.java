@@ -480,15 +480,13 @@ public class User{
 			
 			// Could technically throw an IllegalArgumentException
 
-			DateTimeFormatter display_format = 
-			DateTimeFormatter.ofPattern("MMM dd yyyy h':'mm' 'a");
 
 			// Throws a DateTimeException
 			// if any error while printing
 			// the takenMed LocalDateTime occurs
 		
 			String takenMedTimeString =  
-			takenMedTime.format(display_format);
+			takenMedTime.format(UserData.DISPLAY_FORMAT);
 
 			whenLastTakenString += "\t" + 
 			takenMed.getCompleteInfo() + " | " + takenMedTimeString;
@@ -511,6 +509,8 @@ public class User{
 
 <-- CTRL + B							    CTRL + F -->
 */
+
+
 
 
 	// Hashcode Class Function //
