@@ -1,6 +1,5 @@
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 
@@ -42,6 +41,7 @@ public class User{
 	medication(s).
 	
 	*/
+
 
 
 
