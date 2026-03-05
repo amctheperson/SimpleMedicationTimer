@@ -2,6 +2,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Set;
+
 
 import java.time.LocalDateTime;
 import java.time.DateTimeException;
@@ -40,8 +42,6 @@ public class User{
 	medication(s).
 	
 	*/
-
-
 
 
 
@@ -468,49 +468,49 @@ public class User{
 
 		String whenLastTakenString = "{";
 
-		Iterator<Medication> whenLastTaken_keys_iter = 
-		whenLastTaken.keySet().iterator();
+		Set<HashMap.Entry<Medication,LocalDateTime>> setOfEntries_WLT =
+		whenLastTaken.entrySet();
 		
-		while(whenLastTaken_keys_iter.hasNext()){
+		for (HashMap.Entry<Medication,LocalDateTime> entry :
+		setOfEntries_WLT){
 
-			Medication takenMed = whenLastTaken_keys_iter.next();
-
-			LocalDateTime takenMedTime = 
-			whenLastTaken.get(takenMed);
-			
-			// Could technically throw an IllegalArgumentException
-
+			Medication takenMed = entry.getKey();
+			LocalDateTime takenMedAt = entry.getValue();
 
 			// Throws a DateTimeException
 			// if any error while printing
 			// the takenMed LocalDateTime occurs
 		
-			String takenMedTimeString =  
-			takenMedTime.format(UserData.DISPLAY_FORMAT);
+			String takenMedAtString =  
+			takenMedAt.format(UserData.DISPLAY_FORMAT);
 
 			whenLastTakenString += "\t" + 
-			takenMed.getCompleteInfo() + " | " + takenMedTimeString;
+			takenMed.getCompleteInfo() + " | " + takenMedAtString;
 
-			if(whenLastTaken_keys_iter.hasNext()){
-
-				whenLastTakenString += ",\n";
-			}	
-
-		}	
+			whenLastTakenString += ",\n";
+			
+		}
 		
+		// removing the comma and line break appended after final entry
+		// unless no entries were printed
+
+		if (setOfEntries_WLT.size() > 0){
+		
+			whenLastTakenString = 
+			whenLastTakenString.substring(
+				0, whenLastTakenString.length() - 2);
+
+		}
 		whenLastTakenString += "\t}";
 
 		return whenLastTakenString;
 
-	}
-	
+	}	
 /*
 				     Page 8
 
 <-- CTRL + B							    CTRL + F -->
 */
-
-
 
 
 	// Hashcode Class Function //
