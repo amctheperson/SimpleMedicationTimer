@@ -8,35 +8,35 @@ import java.time.LocalDateTime;
 public class UserData{
 
 	/*
-	
-	PAGE	CONTENTS
 
-	1	Static Variables
+	PAGE	PURPOSE			FUNCTION SIGNATURE
 
-	2	Constructors
+	1	STATIC VARIABLES
 
-	3	Accessor Methods
+	2	Check for unsaved Meds	allMedicationsSavedCheck(User user)
 
-	4	Modifier Methods
+	3	dailyRoutine:		serializeDailyRoutine(User user)
+		Medication[] ->
+		String[]	
 
-	5	equals(Object o)
+	4	TODO				
 
-	6	toString()
-	
-	7-8	toString() helper functions
 
-	7		getDailyRoutineString()
-	8		getWhenLastTakenString()
-	
-	9	hashcode() -- equals() helper function	
-	
-
-	
-	This class defines the User object, used to represent
-	how and when the user of this application takes their ADHD
-	medication(s).
+	This class is a work in progress.
 	
 	*/
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -58,10 +58,10 @@ public class UserData{
 
 
 	// STATIC VARIABLES //
+
  
 	public static final DateTimeFormatter DISPLAY_FORMAT = 
 	DateTimeFormatter.ofPattern("MMM dd yyyy h':'mm' 'a");
-
 
 
 
@@ -114,15 +114,14 @@ public class UserData{
 */
 
 
-	// Check for unsaved Medications from User and Save Function //
+	// Check for Unsaved Medication from User Function //
 
-	// Within a provided User instance, this function checks to see
-	// if any Medication objects inside the dailyRoutine array
-	// or the whenLastTaken HashMap key set have not been saved yet
+
+	// This function checks if any Medication instances 
+	// from within the provided User class properties
+	// have not been saved yet
 
 	// If so, this function saves them locally
-	// thus, verifying that all Medication represented in this User
-	// have been saved already
  
 	public static void allMedicationsSavedCheck(User user)
 	throws Exception{
@@ -131,49 +130,15 @@ public class UserData{
 
 		for (Medication routineMed: user.getDailyRoutine()){
 			
-			boolean routineMedSavedCheck = 
-			MedicationDataSaveHelper.checkIfSavedAlready(
-				routineMed);
+			boolean routineMedSavedCheck = MedicationDataSaveHelper.			checkIfSavedAlready(routineMed);
 
 			if (!routineMedSavedCheck){
 				
-				File routineMedFile = 
-				MedicationData.saveMedicationToNewJsonFile(
-					routineMed);
+				File routineMedFile = MedicationData.
+				saveMedicationToNewJsonFile(routineMed);
 			
 			}
 		}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-				     Page 2
-
-<-- CTRL + B							    CTRL + F -->
-*/
-
-
-	// Check for unsaved Medications from User and Save Function //
-	// (contd.)
-
 
 		// Check for unsaved Medication in whenLastTaken
 
@@ -188,46 +153,23 @@ public class UserData{
 			Medication takenMed = 
 			user_whenLastTaken_keys_iter.next();
 	
-			boolean takenMedSavedCheck = 
-			MedicationDataSaveHelper.checkIfSavedAlready(
-				takenMed);
+			boolean takenMedSavedCheck = MedicationDataSaveHelper.
+			checkIfSavedAlready(takenMed);
 
 			if (!takenMedSavedCheck){
 				
-				File takenMedFile = 
-				MedicationData.saveMedicationToNewJsonFile(
-					takenMed);
-			
+				File takenMedFile = MedicationData.
+				saveMedicationToNewJsonFile(takenMed);		
 			}
 		}	
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*
-				     Page 3
+				     Page 2
 
 <-- CTRL + B							    CTRL + F -->
 */
-
-
+	
+	
 	// Serialize dailyRoutine Medication Array Function //
 
 
@@ -265,6 +207,26 @@ public class UserData{
 	}
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+				     Page 3
+
+<-- CTRL + B							    CTRL + F -->
+*/
+
+
 	// TO DO TODAY PREFERABLY 
 	
 	// Serialize whenLastTaken into Hashmap of String, String pairs
@@ -290,31 +252,36 @@ public class UserData{
 
 	
 	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*
-				     Page 3
+				     Page 4
 
 <-- CTRL + B							    CTRL + F -->
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-				     Page 3
-
-<-- CTRL + B							    CTRL + F -->
-*/
-	
+*/	
 	
 
 
