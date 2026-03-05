@@ -227,10 +227,59 @@ public class UserData{
 */
 
 
+	public static HashMap<String,String> serializeWhenLastTaken(User user)
+	throws Exception{
+
+
+
+		HashMap<Medication,LocalDateTime> user_whenLastTaken =
+		user.getWhenLastTaken();
+
+		HashMap<String,String> user_whenLastTaken_asStrings =
+		new HashMap<String,String>();
+
+	
+		Iterator<Medication> user_whenLastTaken_keys_iter = 
+		user_whenLastTaken.keySet().iterator();
+		
+		while(user_whenLastTaken_keys_iter.hasNext()){
+
+			Medication takenMed = 
+			user_whenLastTaken_keys_iter.next();
+		
+			LocalDateTime takenMedLast = 
+			user_whenLastTaken.get(takenMed);
+
+		
+			File takenMedFile =
+			MedicationDataHelper.getExistingMedicationJsonFile(
+				takenMed);
+
+			String takenMedFileName = takenMedFile.getName();
+
+			String takenMedLast_string =
+			takenMedLast.format(DISPLAY_FORMAT);
+
+			user_whenLastTaken_asStrings.put(
+				takenMedFileName, takenMedLast_string);
+
+		}
+
+		return user_whenLastTaken_asStrings;	
+	}
+		
+
+
+
 	// TO DO TODAY PREFERABLY 
+
+	// switch to for:each blocks as seen in Test.java instead of using
+	// the iterator class
 	
 	// Serialize whenLastTaken into Hashmap of String, String pairs
 	// with Med file names and json
+
+	// switch to
 
 	// Serialize entire class into jsonable hashmap
 

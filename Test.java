@@ -1,62 +1,54 @@
 import java.io.File;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 
 public class Test{
 
 	public static void main(String[] args) throws Exception{
-								
-		Medication testMed = new Medication(
-							"Adderall",
-							"20mg",
-							"XR",
-							3.0
-		);
-		
-		File testMedFile = 
-		MedicationData.saveMedicationToJsonFile(testMed);
-					
-		Medication otherTestMed = 
-		MedicationData.loadMedicationFromJsonFile(testMedFile);
-
-		boolean equivCheck = testMed.equals(otherTestMed);
-		
-		System.out.println(equivCheck);
-
-		otherTestMed.setDosage("10mg");
-		otherTestMed.setType("IR");
-		otherTestMed.setTotalHoursOfClarity(2.0); 
-		
-		File otherTestMedFile = 
-		MedicationData.saveMedicationToJsonFile(otherTestMed);
-			
-
-		// should raise just 1 IllegalArgumentException
-		
 				
-		File notAMedFile = new File("resources" + File.separator + 
-		"cheatsheet.txt");
-		System.out.println(notAMedFile.getName());
-		String testString = 
-		MedicationDataLoadHelper.jsonFileToJsonString(notAMedFile);
-		System.out.println(testString);
-			
-		
+		Medication testMed1 = 	new Medication(
+						"Adderall",
+						"20mg",
+						"XR",
+						3.0
+					);
+
+		Medication testMed2 = 	new Medication(
+						"Adderall",
+						"10mg",
+						"IR",
+						2.0
+					);
+
+		LocalDateTime right_now = 
+		LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
 	
-		
-		// Should raise an Exception
-		MedicationData.overwriteJsonFileWithNewMedication(testMedFile,
-		otherTestMed);
-		
+		Medication[] testDailyRoutine = {testMed1, testMed2};
 
-				
-		testMed = 
-		MedicationData.loadMedicationFromJsonFile(otherTestMedFile);
 
-		boolean secondEquivCheck = testMed.equals(otherTestMed);
-		
-		System.out.println(secondEquivCheck);
+		User testUser = new User(
+				"Andrew",
+				testDailyRoutine
+		);
 
-		MedicationData.deleteMedicationFile(testMedFile);
-		MedicationData.deleteMedicationFile(otherTestMedFile);		
+		testUser.getWhenLastTaken().put(testMed1, right_now);
+		testUser.getWhenLastTaken().put(testMed2, right_now);
+
+		HashMap<String,String> test_serialized_WLT = 
+		UserData.serializeWhenLastTaken(testUser);				
+		for (HashMap.Entry<String,String> serialized_pair : 
+		test_serialized_WLT.entrySet()){
+
+			String serialized_med = serialized_pair.getKey();
+			String serialized_ldt = serialized_pair.getValue();
+
+			System.out.println("(" + serialized_med + " , " + 
+			serialized_ldt + ")"); 		
+
+		}	
 			
 	}
 }
