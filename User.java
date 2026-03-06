@@ -2,7 +2,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Set;
-
+import java.lang.StringBuilder;
 
 import java.time.LocalDateTime;
 import java.time.DateTimeException;
@@ -466,39 +466,39 @@ public class User{
 
 	public String getWhenLastTakenString() throws Exception{
 
-		String whenLastTakenString = "{";
+		// Utilizing the forEach method that takes in
+		// a BiConsumer functional interface
+		// which can be assigned to a lambda expression
 
-		Set<HashMap.Entry<Medication,LocalDateTime>> setOfEntries_WLT =
-		whenLastTaken.entrySet();
-		
-		for (HashMap.Entry<Medication,LocalDateTime> entry :
-		setOfEntries_WLT){
+		// StringBuilder used because lambda expressions can only
+		// reference final or effectively final variables
+		// so modifying a String variable like "+=" will not compile
+				
+		StringBuilder whenLastTakenStringBuilder = new StringBuilder();
 
-			Medication takenMed = entry.getKey();
-			LocalDateTime takenMedAt = entry.getValue();
+		whenLastTakenStringBuilder.append("{");
+	
+		whenLastTaken.forEach(
 
-			// Throws a DateTimeException
-			// if any error while printing
-			// the takenMed LocalDateTime occurs
-		
-			String takenMedAtString =  
-			takenMedAt.format(UserData.DISPLAY_FORMAT);
+			(takenMed, takenMedAt) -> {
+				
+				whenLastTakenStringBuilder.append("\t" + 
+				takenMed.getCompleteInfo() + 
+				" | " +	
+				takenMedAt.format(UserData.DISPLAY_FORMAT) +
+				",\n");				
+			}
+		);
 
-			whenLastTakenString += "\t" + 
-			takenMed.getCompleteInfo() + " | " + takenMedAtString;
-
-			whenLastTakenString += ",\n";
+		String whenLastTakenString = 
+		whenLastTakenStringBuilder.toString();
 			
-		}
-		
-		// removing the comma and line break appended after final entry
-		// unless no entries were printed
+		// Removing the comma and line break appended after final entry
 
-		if (setOfEntries_WLT.size() > 0){
+		if (whenLastTaken.size() > 0){
 		
-			whenLastTakenString = 
-			whenLastTakenString.substring(
-				0, whenLastTakenString.length() - 2);
+			whenLastTakenString = whenLastTakenString.substring(
+			0, whenLastTakenString.length() - 2);
 
 		}
 		whenLastTakenString += "\t}";
