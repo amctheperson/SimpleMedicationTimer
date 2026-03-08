@@ -1,8 +1,7 @@
 import java.time.format.DateTimeFormatter;
 import java.io.File;
 import java.util.HashMap;
-import java.util.Iterator;
-
+import java.util.Set;
 import java.time.LocalDateTime;
 
 public class UserData{
@@ -13,21 +12,22 @@ public class UserData{
 
 	1	STATIC VARIABLES
 
-	2	Check for unsaved Meds	allMedicationsSavedCheck(User user)
+	2-3	Check for unsaved Meds	allMedicationsSavedCheck(User user)
 
-	3	dailyRoutine:		serializeDailyRoutine(User user)
+	4	dailyRoutine:		serializeDailyRoutine(User user)
 		Medication[] ->
 		String[]	
 
-	4	TODO				
+	5	whenLastTaken:		serializeWhenLastTaken(User user)
+		HashMap<Medication,
+		LocalDateTime> ->
+		HashMap<String,
+		String>	
 
 
 	This class is a work in progress.
 	
 	*/
-
-
-
 
 
 
@@ -140,36 +140,90 @@ public class UserData{
 			}
 		}
 
-		// Check for unsaved Medication in whenLastTaken
 
-		HashMap<Medication,LocalDateTime> user_whenLastTaken =
-		user.getWhenLastTaken();
 
-		Iterator<Medication> user_whenLastTaken_keys_iter = 
-		user_whenLastTaken.keySet().iterator();
-		
-		while(user_whenLastTaken_keys_iter.hasNext()){
 
-			Medication takenMed = 
-			user_whenLastTaken_keys_iter.next();
-	
-			boolean takenMedSavedCheck = MedicationDataSaveHelper.
-			checkIfSavedAlready(takenMed);
 
-			if (!takenMedSavedCheck){
-				
-				File takenMedFile = MedicationData.
-				saveMedicationToNewJsonFile(takenMed);		
-			}
-		}	
-	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*
 				     Page 2
 
 <-- CTRL + B							    CTRL + F -->
 */
+
 	
-	
+	// Check for Unsaved Medication from User Function //
+	// (contd.)
+
+
+	// Check for unsaved Medication in whenLastTaken
+
+	HashMap<Medication,LocalDateTime> user_whenLastTaken =
+	user.getWhenLastTaken();
+
+	user_whenLastTaken.forEach(
+
+		// Trade-off of implementing lambda expression for Biconsumer
+		// functional interface applied to each entry during forEach
+		// is that Exceptions must be handled via try-catch
+
+		(takenMed, takenMedAt) -> {
+
+			try{
+		
+				boolean takenMedSavedCheck = 
+				MedicationDataSaveHelper.
+				checkIfSavedAlready(takenMed);
+
+				if (!takenMedSavedCheck){
+					
+					MedicationData.
+					saveMedicationToNewJsonFile(
+					takenMed);		
+				}
+			}
+
+			catch (Exception e){
+
+				String error_message =
+ 
+				"An exception occured either while " +
+				"verifying a Medication inside whenLastTaken " +				"was saved already, or saving an unsaved " +
+				"Medication to a new Medication JSON File; " +
+				"Medication inside whenLastTaken may remain " + 				"unsaved.\n";
+
+				System.err.print(error_message);			
+			}
+		}
+	);
+
+	}
+
+/*
+				     Page 3
+
+<-- CTRL + B							    CTRL + F -->
+*/
+
+		
 	// Serialize dailyRoutine Medication Array Function //
 
 
@@ -221,16 +275,25 @@ public class UserData{
 
 
 /*
-				     Page 3
+				     Page 4
 
 <-- CTRL + B							    CTRL + F -->
 */
 
 
+	// Serialize whenLastTaken Medication-LocalDateTime HashMap Function //
+
+
+	// Within a provided User, this function returns
+	// a HashMap of String pairs representing the pairs of Medication,
+	// LocalDateTime inside whenLastTaken
+
+	// 1st String in the pair is a Medication JSON File name
+	// 2nd String in pair is LocalDateTime's time and date
+	// in a printable and parseable format
+
 	public static HashMap<String,String> serializeWhenLastTaken(User user)
 	throws Exception{
-
-
 
 		HashMap<Medication,LocalDateTime> user_whenLastTaken =
 		user.getWhenLastTaken();
@@ -238,59 +301,110 @@ public class UserData{
 		HashMap<String,String> user_whenLastTaken_asStrings =
 		new HashMap<String,String>();
 
-	
-		Iterator<Medication> user_whenLastTaken_keys_iter = 
-		user_whenLastTaken.keySet().iterator();
-		
-		while(user_whenLastTaken_keys_iter.hasNext()){
+		user_whenLastTaken.forEach(
 
-			Medication takenMed = 
-			user_whenLastTaken_keys_iter.next();
-		
-			LocalDateTime takenMedLast = 
-			user_whenLastTaken.get(takenMed);
+			(takenMed, takenMedAt) -> {
 
-		
-			File takenMedFile =
-			MedicationDataHelper.getExistingMedicationJsonFile(
-				takenMed);
+				try{
+					File takenMedFile =
+					MedicationDataHelper.
+					getExistingMedicationJsonFile(
+					takenMed);
 
-			String takenMedFileName = takenMedFile.getName();
+					String takenMedFileName = 
+					takenMedFile.getName();
 
-			String takenMedLast_string =
-			takenMedLast.format(DISPLAY_FORMAT);
+					String takenMedAt_string =
+					takenMedAt.format(DISPLAY_FORMAT);
 
-			user_whenLastTaken_asStrings.put(
-				takenMedFileName, takenMedLast_string);
+					user_whenLastTaken_asStrings.put(
+						takenMedFileName,
+						takenMedAt_string
+					);
 
-		}
+				}
+
+
+
+
+
+
+
+
+/*
+				     Page 5
+
+<-- CTRL + B							    CTRL + F -->
+*/
+
+
+	// Serialize whenLastTaken Medication-LocalDateTime HashMap Function //
+	// (contd.)
+
+
+				catch (Exception e){
+
+					String error_message =
+	 
+					"An exception occured while " +
+					"invoking equivalent Medication " + 
+					"file retrieval to a Medication, " +
+					"some entries in whenLastTaken " + 
+					"may not have been serialized.\n";
+					 
+					System.err.print(error_message);			
+				}
+			}
+		);	
 
 		return user_whenLastTaken_asStrings;	
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+				     Page 6
+
+<-- CTRL + B							    CTRL + F -->
+*/
+
+
+	// TO DO 
+
+	// UserDataSave class?
 		
+		// User class -> JSON String
 
+	// UserDataLoad class
 
+		// JSON String -> User class	
 
-	// TO DO TODAY PREFERABLY 
-
-	// switch to for:each blocks as seen in Test.java instead of using
-	// the iterator class
-	
-	// Serialize whenLastTaken into Hashmap of String, String pairs
-	// with Med file names and json
-
-	// switch to
-
-	// Serialize entire class into jsonable hashmap
-
-
-
-	// prepare a string version of User and basically make sure every
-	// Medication saved
-
-	// Local date time can be formatted to string,
-	// display_format should probably
-	// just be defined somewhere, static property of UserData perhaps
+	// Continue learning about Functional Interfaces
 
 
 
