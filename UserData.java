@@ -289,6 +289,7 @@ public class UserData{
 	// LocalDateTime inside whenLastTaken
 
 	// 1st String in the pair is a Medication JSON File name
+
 	// 2nd String in pair is LocalDateTime's time and date
 	// in a printable and parseable format
 
@@ -323,7 +324,6 @@ public class UserData{
 					);
 
 				}
-
 
 
 
