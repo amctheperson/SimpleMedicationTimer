@@ -14,20 +14,21 @@ public class UserData{
 
 	2-3	Check for unsaved Meds	allMedicationsSavedCheck(User user)
 
-	4	dailyRoutine:		serializeDailyRoutine(User user)
-		Medication[] ->
-		String[]	
-
-	5	whenLastTaken:		serializeWhenLastTaken(User user)
-		HashMap<Medication,
-		LocalDateTime> ->
-		HashMap<String,
-		String>	
 
 
 	This class is a work in progress.
 	
 	*/
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -223,182 +224,37 @@ public class UserData{
 <-- CTRL + B							    CTRL + F -->
 */
 
-		
-	// Serialize dailyRoutine Medication Array Function //
 
+	public static File saveUserToJsonFile(User user) throws Exception {
 
-	// Within a provided User, this function returns a String[]
-	// representing the dailyRoutine array of Medication
-	// where each String is the File name of a Medication JSON File
-	// locally saved
-
-	public static String[] serializeDailyRoutine(User user)
-	throws Exception{
+		// Save any unsaved Medication inside user
 
 		allMedicationsSavedCheck(user);
 
-		Medication[] user_dailyRoutine = user.getDailyRoutine();
+		// User instance -> JSON-formatted String -> JSON File
 
-		String[] user_dailyRoutine_asFileNames = 
-		new String[user_dailyRoutine.length];
+		String user_jsonString = 
+		UserDataSaveHelper.userToJsonString(user);
 
-		for (int i = 0; i < user_dailyRoutine.length; i++){
-			
-			Medication routineMed = user_dailyRoutine[i];
-			
-			File routineMedFile =
-			MedicationDataHelper.getExistingMedicationJsonFile(
-				routineMed);
+		// Since this is (ultimately going to be) a phone application
 
-			String routineMedFileName = routineMedFile.getName();
+		// It is safe to assume that only one User exists
 
-			user_dailyRoutine_asFileNames[i] = routineMedFileName;	
+		// Therefore overwriting the existing User.json file is okay
 
-		}
+		File jsonFile = 
+		LocalData.jsonStringToJsonFile(user_jsonString, "User.json");
 
-		return user_dailyRoutine_asFileNames;
+		return jsonFile;	
+
 
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-				     Page 4
-
-<-- CTRL + B							    CTRL + F -->
-*/
-
-
-	// Serialize whenLastTaken Medication-LocalDateTime HashMap Function //
-
-
-	// Within a provided User, this function returns
-	// a HashMap of String pairs representing the pairs of Medication,
-	// LocalDateTime inside whenLastTaken
-
-	// 1st String in the pair is a Medication JSON File name
-
-	// 2nd String in pair is LocalDateTime's time and date
-	// in a printable and parseable format
-
-	public static HashMap<String,String> serializeWhenLastTaken(User user)
-	throws Exception{
-
-		HashMap<Medication,LocalDateTime> user_whenLastTaken =
-		user.getWhenLastTaken();
-
-		HashMap<String,String> user_whenLastTaken_asStrings =
-		new HashMap<String,String>();
-
-		user_whenLastTaken.forEach(
-
-			(takenMed, takenMedAt) -> {
-
-				try{
-					File takenMedFile =
-					MedicationDataHelper.
-					getExistingMedicationJsonFile(
-					takenMed);
-
-					String takenMedFileName = 
-					takenMedFile.getName();
-
-					String takenMedAt_string =
-					takenMedAt.format(DISPLAY_FORMAT);
-
-					user_whenLastTaken_asStrings.put(
-						takenMedFileName,
-						takenMedAt_string
-					);
-
-				}
-
-
-
-
-
-
-
-/*
-				     Page 5
-
-<-- CTRL + B							    CTRL + F -->
-*/
-
-
-	// Serialize whenLastTaken Medication-LocalDateTime HashMap Function //
-	// (contd.)
-
-
-				catch (Exception e){
-
-					String error_message =
-	 
-					"An exception occured while " +
-					"invoking equivalent Medication " + 
-					"file retrieval to a Medication, " +
-					"some entries in whenLastTaken " + 
-					"may not have been serialized.\n";
-					 
-					System.err.print(error_message);			
-				}
-			}
-		);	
-
-		return user_whenLastTaken_asStrings;	
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-				     Page 6
-
-<-- CTRL + B							    CTRL + F -->
-*/
-
 
 	// TO DO 
 
-	// UserDataSave class?
-		
-		// User class -> JSON String
+	// Move user class property functions to UserDataSaveHelper
+	
+	// jsonFileTojsonString should be Local Data too lol
 
 	// UserDataLoad class
 
