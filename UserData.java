@@ -1,8 +1,12 @@
-import java.time.format.DateTimeFormatter;
+import com.github.cliftonlabs.json_simple.JsonObject;
+
 import java.io.File;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import java.util.HashMap;
 import java.util.Set;
-import java.time.LocalDateTime;
 
 public class UserData{
 
@@ -46,11 +50,6 @@ public class UserData{
 
 
 
-
-
-
-
-
 /*
 				     Page 0
 
@@ -60,19 +59,19 @@ public class UserData{
 
 	// STATIC VARIABLES //
 
+		
+	// For printing LocalDateTime objects to console
  
 	public static final DateTimeFormatter DISPLAY_FORMAT = 
 	DateTimeFormatter.ofPattern("MMM dd yyyy h':'mm' 'a");
 
-
-
-
-
-
-
-
-
-
+	// For accessing the sole User JSON file locally saved
+	
+	// Note to self: This static final variable
+	// has been tested and proven to change its modification
+	// date when
+	
+	public static final File USER_FILE = new File("User.json");
 
 
 
@@ -225,7 +224,20 @@ public class UserData{
 */
 
 
+	// return File not needed since only 1 file?
+
 	public static File saveUserToJsonFile(User user) throws Exception {
+
+		User currentlySavedUser = loadUserFromJsonFile();
+
+		if(user.equals(currentlySavedUser)){
+
+			System.out.println("User intended to be saved is " + 
+			"equivalent to existing saved User file, so no save " +
+			"is necessary. ");
+
+			return USER_FILE;
+		}
 
 		// Save any unsaved Medication inside user
 
@@ -240,7 +252,7 @@ public class UserData{
 
 		// It is safe to assume that only one User exists
 
-		// Therefore overwriting the existing User.json file is okay
+		// Therefore overwriting existing User JSON file is acceptable
 
 		File jsonFile = 
 		LocalData.jsonStringToJsonFile(user_jsonString, "User.json");
@@ -250,15 +262,87 @@ public class UserData{
 
 	}
 
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+				     Page 4
+
+<-- CTRL + B							    CTRL + F -->
+*/
+
+
+	public static User loadUserFromJsonFile() throws Exception {
+	
+		String user_JsonString = LocalData.jsonFileToJsonString(
+		USER_FILE);
+
+		JsonObject user_JsonObject = 
+		LocalData.jsonStringToJsonObject(user_JsonString);
+
+		UserDataLoadHelper.validateJsonObjectForUser(user_JsonObject);
+
+		User user = UserDataLoadHelper.validatedJsonObjectToUser(
+		user_JsonObject);
+
+		return user; 
+
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+				     Page 5
+
+<-- CTRL + B							    CTRL + F -->
+*/
+
+
+
 	// TO DO 
 
-	// Move user class property functions to UserDataSaveHelper
 	
-	// jsonFileTojsonString should be Local Data too lol
 
-	// UserDataLoad class
-
-		// JSON String -> User class	
 
 	// Continue learning about Functional Interfaces
 
@@ -296,8 +380,16 @@ public class UserData{
 
 
 
+
+
+
+
+
+
+
+
 /*
-				     Page 4
+				     Page 6
 
 <-- CTRL + B							    CTRL + F -->
 */	
