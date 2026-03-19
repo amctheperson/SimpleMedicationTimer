@@ -13,7 +13,6 @@ public class UserDataSaveHelper {
 
 	1	User -> JSON String	userToJsonString(User user)
 
-
 	2	dailyRoutine:		serializeDailyRoutine(User user)
 		Medication[] ->
 		String[]	
@@ -26,12 +25,13 @@ public class UserDataSaveHelper {
 
 
 
-	This class is a work in progress.
+	This class contains functions that assist in the primary save function
+	of a User instance in UserData.
+
+	The serialization processes for User class properties dailyRoutine and
+	whenLastTaken can be found here.
 	
 	*/
-
-
-
 
 
 
