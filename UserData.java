@@ -18,13 +18,13 @@ public class UserData{
 
 	2-3	Check for unsaved Meds	allMedicationsSavedCheck(User user)
 
+	4	SAVE USER		saveUserToJsonFile(User user) 
 
+	5	LOAD USER FROM FILE	loadUserFromJsonFile() 
 
 	This class is a work in progress.
 	
 	*/
-
-
 
 
 
@@ -224,47 +224,47 @@ public class UserData{
 */
 
 
-	// return File not needed since only 1 file?
+	// USER SAVE FUNCTION //
 
-	public static File saveUserToJsonFile(User user) throws Exception {
+	// Saves a provided User instance locally under "User.json"
 
-		User currentlySavedUser = loadUserFromJsonFile();
 
-		if(user.equals(currentlySavedUser)){
+	public static void saveUserToJsonFile(User user) throws Exception {
 
-			System.out.println("User intended to be saved is " + 
-			"equivalent to existing saved User file, so no save " +
-			"is necessary. ");
+		// Ignore overwrite request if existing User file equates
+		// to provided User instance, as overwrite would then be
+		// unnecessary
 
-			return USER_FILE;
+		if(USER_FILE.exists()){
+
+			User currentlySavedUser = loadUserFromJsonFile();
+
+			if(user.equals(currentlySavedUser)){
+
+				System.out.println("Equivalent User file " + 
+				"already saved."); 
+
+				return USER_FILE;
+			}
+
 		}
 
-		// Save any unsaved Medication inside user
+		// First, save any unsaved Medication from user 
 
 		allMedicationsSavedCheck(user);
 
+		// Then perform the following
 		// User instance -> JSON-formatted String -> JSON File
 
 		String user_jsonString = 
 		UserDataSaveHelper.userToJsonString(user);
 
-		// Since this is (ultimately going to be) a phone application
-
-		// It is safe to assume that only one User exists
-
+		// It is safe to assume that only one User exists at a time
 		// Therefore overwriting existing User JSON file is acceptable
 
-		File jsonFile = 
 		LocalData.jsonStringToJsonFile(user_jsonString, "User.json");
 
-		return jsonFile;	
-
-
 	}
-
-
-
-
 
 
 
@@ -280,6 +280,10 @@ public class UserData{
 <-- CTRL + B							    CTRL + F -->
 */
 
+
+	// USER LOAD FUNCTION //
+
+	// Returns User instance loaded from locally saved "User.json" file
 
 	public static User loadUserFromJsonFile() throws Exception {
 	
@@ -297,10 +301,6 @@ public class UserData{
 		return user; 
 
 	}
-
-
-
-
 
 
 
