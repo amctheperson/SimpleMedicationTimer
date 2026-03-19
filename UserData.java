@@ -22,16 +22,16 @@ public class UserData{
 
 	5	LOAD USER FROM FILE	loadUserFromJsonFile() 
 
-	This class is a work in progress.
+	
+	This class contains the primary save and load functionality
+	for User objects.
+
+	This allows User data to be stored and accessed locally, after
+	some initial serialization 
+
+	(check UserDataSaveHelper class for more on this process)
 	
 	*/
-
-
-
-
-
-
-
 
 
 
@@ -242,9 +242,8 @@ public class UserData{
 			if(user.equals(currentlySavedUser)){
 
 				System.out.println("Equivalent User file " + 
-				"already saved."); 
+				"already saved, cancelling overwrite."); 
 
-				return USER_FILE;
 			}
 
 		}
@@ -265,6 +264,7 @@ public class UserData{
 		LocalData.jsonStringToJsonFile(user_jsonString, "User.json");
 
 	}
+
 
 
 
@@ -334,66 +334,6 @@ public class UserData{
 /*
 				     Page 5
 
-<-- CTRL + B							    CTRL + F -->
+<-- CTRL + B 
 */
-
-
-
-	// TO DO 
-
-	
-
-
-	// Continue learning about Functional Interfaces
-
-
-
-
-
-
-
-
-	
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-				     Page 6
-
-<-- CTRL + B							    CTRL + F -->
-*/	
-	
-
-
 }
