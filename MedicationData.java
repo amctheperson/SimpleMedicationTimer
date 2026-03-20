@@ -1,6 +1,8 @@
 import com.github.cliftonlabs.json_simple.JsonObject;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 public class MedicationData{
 
@@ -47,13 +49,122 @@ public class MedicationData{
 
 
 
-
-
 /*
 				     Page 0
 
 								    CTRL + F -->
 */
+	
+	// STATIC VARIABLES // 
+	
+	public static HashMap<Medication,File> SAVED_MEDICATION;
+
+	static {
+		try{
+			SAVED_MEDICATION = new HashMap<Medication,File>();
+
+			ArrayList<File> allMedicationJsonFiles = 
+			MedicationDataHelper.getAllMedicationJsonFilesHere();
+
+			for(File savedMedFile : allMedicationJsonFiles){
+
+				Medication savedMed = 
+				loadMedicationFromJsonFile(savedMedFile);
+
+				SAVED_MEDICATION.put(savedMed, savedMedFile);	
+		
+			}	
+		}
+		catch(Exception e){
+
+			String error_message = "Could not initialize static " +
+			"variable SAVED_MEDICATION either because of " + 
+			" an Exception getting all the Medication Files " +
+			"or loading one of them into a Medication instance./n";
+
+			System.err.print(new Exception(error_message));
+
+		} 
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+				     Page 1
+
+<-- CTRL + B							    CTRL + F -->
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 	// SAVING MEDICATION TO MEDICATION FILE // 
