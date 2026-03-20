@@ -1,6 +1,10 @@
 import com.github.cliftonlabs.json_simple.JsonObject;
+
 import java.io.File;
-import java.io.FileWriter;
+
+import java.lang.RuntimeException;
+import java.lang.SecurityException;
+
 import java.util.HashMap;
 import java.util.ArrayList;
 
@@ -9,19 +13,30 @@ public class MedicationData{
 
 	/*
 
-	PAGE	PURPOSE		FUNCTION SIGNATURE
+	PAGE	PURPOSE			FUNCTION SIGNATURE
 
-	1	SAVE		saveMedicationToJsonFile(Medication med)
+	1	STATIC VARIABLES	
 
-	2	LOAD		loadMedicationFromJsonFile(File jsonFile)
+	2	SAVE MED TO FILE	saveMedicationToJsonFile(Medication med)
 
-	3-4	OVERWRITE	overwriteJsonFileWithNewMedication(File
-				jsonFile, Medication newMed)
+	3	LOAD MED FROM FILE	loadMedicationFromJsonFile(
+					File jsonFile)
 
-	5	DELETE		deleteMedicationFile(File jsonFile)			
-	6-7	save new	saveMedicationToNewJsonFile(Medication newMed)
+	4	OVERWRITE MED FILE	overwriteJsonFileWithNewMedication(
+		WITH NEW MED		File jsonFile, Medication newMed)
+
+	5	DELETE MED FILE		deleteMedicationFile(File jsonFile)			
+	6	Save Med to New File	saveMedicationToNewJsonFile(
+					Medication newMed)
 	
-	
+	7	Med-Med File Pair	validateOverwritePair(
+		Valid for Overwrite	File savedMedFile, 
+					Medication newMed) 
+
+	8	Get Saved Med File	getSavedMedicationFromSaved
+		via Saved Med		MedicationFile(
+					File target_savedMedFile){
+ 
 	
 	
 	This class contains the primary save and load functionality
@@ -34,32 +49,27 @@ public class MedicationData{
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*
 				     Page 0
 
 								    CTRL + F -->
 */
+
 	
 	// STATIC VARIABLES // 
+
+	
+	// One-to-One Mapping of Medication
+	// and local JSON Files that represent Medication
+
+	// For ease of access of all Med files
+
+	// Must be manually updated per file action
 	
 	public static HashMap<Medication,File> SAVED_MEDICATION;
 
 	static {
+
 		try{
 			SAVED_MEDICATION = new HashMap<Medication,File>();
 
@@ -82,7 +92,7 @@ public class MedicationData{
 			" an Exception getting all the Medication Files " +
 			"or loading one of them into a Medication instance./n";
 
-			System.err.print(new Exception(error_message));
+			System.err.print(new RuntimeException(error_message));
 
 		} 
 	}
@@ -96,16 +106,6 @@ public class MedicationData{
 
 
 
-
-
-
-
-
-
-
-
-
-
 /*
 				     Page 1
 
@@ -113,93 +113,39 @@ public class MedicationData{
 */
 
 
+	// SAVING MEDICATION TO MEDICATION FILE FUNCTION // 
 
+	// Saves provided Medication to local JSON File and returns it
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	// SAVING MEDICATION TO MEDICATION FILE // 
-
-	// Saves Medication instance locally as a Medication JSON File
-
-	// Returns newly created Medication file created OR 
-	// existing Medication file if provided Medication instance
-	// was saved already
+	// Note: This function also checks 
+	// if provided Medication has been saved already
+	// and returns existing JSON file if so
+ 
 		
 	public static File saveMedicationToJsonFile(Medication med) 
 	throws Exception{
 
-		boolean medWasAlreadySaved =
-		MedicationDataSaveHelper.checkIfSavedAlready(med);
+		// Check if med saved already
 
-		// If provided Medication instance has already been saved
-		// then return the existing file
-			
+		boolean medWasAlreadySaved =
+		SAVED_MEDICATION.containsKey(med);
+	
 		if(medWasAlreadySaved){
+
+			return SAVED_MEDICATION.get(med);
 				
-			File equivalentMedFile =
-			MedicationDataHelper.getExistingMedicationJsonFile(
-			med);
-		
-			return equivalentMedFile;	
 		}
 
-		// Otherwise return the new JSON File created
-		// when saving the new Medication instance
-		
-		File newMedFileCreated =
-		saveMedicationToNewJsonFile(med);
+		// Save to new JSON File and return said File
 
-		return newMedFileCreated;	
+		// and update SAVED_MEDICATION HashMap accordingly
+		
+		File new_medFile = saveMedicationToNewJsonFile(med);
+		
+		SAVED_MEDICATION.put(med, new_medFile);
+
+		return new_medFile;
+
 	}
 
 
@@ -218,30 +164,32 @@ public class MedicationData{
 
 
 /*
-				     Page 1
+				     Page 2
 
 <-- CTRL + B							    CTRL + F -->
 */
 
 
-	// LOADING MEDICATION FROM MEDICATION FILE //
+	// LOADING MEDICATION FROM MEDICATION FILE FUNCTION //
  
-	// File loading into Medication: Given a provided Medication JSON file
-	// this function loads the file into a new Medication instance	
+	// Loads provided Medication JSON file into new Medication instance
+
+	// Note: May return default Medication instance 
+	// if any exceptions occurred during the conversion process
 
 	public static Medication loadMedicationFromJsonFile(File jsonFile)
 	throws Exception{
 		
-		// This function essentially does the following conversions:
-		
-		// JSON File --> JSON-formatted String --> JSON-Object
-		// (basically a Hashmap<String, Object>) --> Medication
+		// Conversion process:
+ 
+		// JSON File --> JSON-formatted String --> 
+		// JSON-Object --> Medication
 			
 		String jsonString = 
-		MedicationDataLoadHelper.jsonFileToJsonString(jsonFile);
+		LocalData.jsonFileToJsonString(jsonFile);
 		
 		JsonObject jsonObject = 
-		MedicationDataLoadHelper.jsonStringToJsonObject(jsonString);
+		LocalData.jsonStringToJsonObject(jsonString);
 
 		Medication loadedMed = 
 		MedicationDataLoadHelper.jsonObjectToMedication(jsonObject);
@@ -272,65 +220,6 @@ public class MedicationData{
 
 
 
-
-
-/*
-				     Page 2
-
-<-- CTRL + B							    CTRL + F -->
-*/
-
-
-	// OVERWRITING MEDICATION FILE WITH A NEW MEDICATION // 
-
-	// Overwrites the provided Medication JSON file
-	// with the provided Medication instance 
-
-	public static boolean overwriteJsonFileWithNewMedication(File jsonFile,
-	Medication newMed) throws Exception{
-		
-		// Checking if provided Medication has been saved already
- 
-		boolean newMedSavedAlready = MedicationDataSaveHelper.
-			checkIfSavedAlready(newMed);
-
-		if(newMedSavedAlready){
-
-			String recoverable_error_message = 
-			"The provided Medication instance has already been " +
-			"saved locally, therefore the provided JSON file " + 
-			"does not need to be overwritten. Returning false " + 
-			"to overwriteJsonFileWithNewMedication.\n";
-
-			Exception recoverable_error = 
-			new Exception(recoverable_error_message);
-
-			System.err.print(recoverable_error);
-
-			return false;
-		}
-
-		// Checking if provided Medication JSON file
-		// and provided Medication instance are even different
-	
-		boolean newMedAndJsonFileAreSame = MedicationDataHelper.
-			areJsonFileAndMedicationSame(jsonFile,newMed);
-
-		if(newMedAndJsonFileAreSame){
-
-			String recoverable_error_message = 
-			"The provided Medication instance is equivalent " + 
-			"to the also provided Medication JSON File, " +
-			"therefore the file does not need to be overwritten." +
-			"Returning false to " + 
-			"overwriteJsonFileWithNewMedication.\n";
-
-			Exception recoverable_error = 
-			new Exception(recoverable_error_message);
-
-			System.err.print(recoverable_error);
-			return false;
-		}
 /*
 				     Page 3
 
@@ -338,53 +227,53 @@ public class MedicationData{
 */
 
 
-	// OVERWRITING MEDICATION FILE WITH A NEW MEDICATION // 
-	// (contd.)
+	// OVERWRITE MEDICATION FILE WITH NEW MEDICATION // 
 
-		// This try-catch block is similar to the one done in 
-		// secondary save function 'writeMedicationToNewJsonFile'
-		// but without creating a new Medication JSON file 
+
+	// Overwrites only unsaved new Medication onto a saved Medication file
+	// that is logically different
 	
+
+	public static boolean overwriteJsonFileWithNewMedication(
+	File savedMedFile, Medication newMed) throws Exception{
+
+		// Check if provided pair is valid for overwrite
+
 		try{
-			String jsonString = 
-			MedicationDataSaveHelper.medicationToJsonString(newMed);
 
-			FileWriter jsonFileWriter = new FileWriter(jsonFile);
-			jsonFileWriter.write(jsonString);
-			jsonFileWriter.close();
-
-			return true;
+			validateOverwritePair(savedMedFile, newMed);
 
 		}
 
+		catch(IllegalArgumentException e){
 
+			System.err.println(e);
 
+			return false;
 
-		// Any exceptions raised while saving
-		// in the try block on the last page
-		// lead to false being returned 
-		// because jsonFile was not modified
-
-		catch(Exception e){
-
-			String recoverable_error_message = "An exception " +
-			"occurred in the regular saving process. " +
-			"Returning false to function " +
-			"\'overwriteJsonFileWithNewMedication\', as file " +
-			jsonFile.getName() + " was not overwritten.\n";
-			
-			Exception recoverable_error =
-			new Exception(recoverable_error_message);
+		}
 		
-			System.err.print(recoverable_error);
-			
-			return false;	
-		}
+		Medication savedMed = 
+		getSavedMedicationFromSavedMedicationFile(savedMedFile);
+
+		String savedMedFileName = savedMedFile.getName();
+
+		String jsonString = 
+		MedicationDataSaveHelper.medicationToJsonString(newMed);
+	
+		// This line does the actual overwriting of saveMedFile
+		// with data from newMed
+	
+		File newMedFile =
+		LocalData.jsonStringToJsonFile(jsonString, savedMedFileName);
+
+		// Update SAVED_MEDICATION accordingly
+
+		MedicationData.SAVED_MEDICATION.remove(savedMed);
+		MedicationData.SAVED_MEDICATION.put(newMed, newMedFile);
+
+		return true;	
 	}
-
-
-
-
 
 
 
@@ -397,54 +286,54 @@ public class MedicationData{
 
 	// DELETING A MEDICATION FILE // 
 
-	// Deletes the provided locally saved Medication file 
-		
-	public static boolean deleteMedicationFile(File jsonFile)
+	// Deletes provided Medication file from local directory
+	
+	
+	public static boolean deleteMedicationFile(File medFile)
 	throws Exception{
 		
-		// Checking if jsonFile is the Medication file
-		// which can be passed in catch blocks to avoid
-		// crashing the application
-		
-		File defaultMedicationFile = 
-			DefaultMedicationData.DEFAULT_MEDICATION_FILE;
-
-		if(jsonFile.equals(defaultMedicationFile)){
-			
-			String recoverable_error_message = 
-			"Default Medication file is a system file that " + 
-			"cannot be deleted. Returning false.\n";
-
-			Exception recoverable_error = new Exception(
-			recoverable_error_message); 
-
-			System.err.print(recoverable_error);
-
-			return false;
-		}
-
 		try{
-			jsonFile.delete();
-			return true;
+			medFile.delete();
 
+			// Update SAVED_MEDICATION upon successful deletion
+
+			Medication savedMed = 
+			getSavedMedicationFromSavedMedicationFile(medFile);
+
+			SAVED_MEDICATION.remove(savedMed);
+	
+			return true;
 		}
 		catch(SecurityException e){	
 		
-			String recoverable_error_message =
+			String error_message =
+			medFile.getName() + " was not deleted because " + 
 			"Security manager on device denies write access to " +
-			"file " + jsonFile.getName() + ". Returning false " + 
-			"to deleteMedicationFile(File jsonFile) since " + 
-			"jsonFile " + jsonFile.getName() + 
-			" could not be deleted.\n";
+			"it.\n"; 
 
-			Exception recoverable_error = 
-			new Exception(recoverable_error_message);
+			SecurityException error = 
+			new SecurityException(error_message);
 
-			System.err.print(recoverable_error);
+			System.err.print(error);
 
 			return false;
 		}
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*
 				     Page 5
 
@@ -453,48 +342,48 @@ public class MedicationData{
 
 
 	// Saving to New Medication File //
-	// (this is a secondary function)
 
-	// Returns newly-created JSON file for provided Medication instance OR 
-	// default JSON file if exception occurred during saving
+	// Saves provided Medication to new JSON file and returns said file
+
+	// Note: if an Exception prevents saving from occurring
+	// this function returns the default Medication file 
+	
 	
 	public static File saveMedicationToNewJsonFile(Medication newMed)
 	throws Exception{
-	
-		// This conditional is similar to the initial check
-		// if the provided Medication has been saved already
-		// that is done in the primary save function
+				
+		try{
 
-		// however this check raises an Exception
-		// as the check indicates a misuse of this function
-		
-		boolean newMedAlreadySaved =
-		MedicationDataSaveHelper.checkIfSavedAlready(newMed);
-	
-		if(newMedAlreadySaved){
-		
-			File equivalentMedFile =
-			MedicationDataHelper.getExistingMedicationJsonFile(
-			newMed);
-	
-			String recoverable_error_message = 
-			"Provided Medication instance to function \'" +
-			"saveMedicationToNewJsonFile\' has already been " +
-			"saved. Returning file \'" + 
-			equivalentMedFile.getName() + "\', as it represents " +
-			" the provided Medication already.\n";
+			String newMedFileName = 
+			MedicationDataSaveHelper.generateNewFileName();
 
-			Exception recoverable_error = 
-			new Exception(recoverable_error_message);
+			String jsonString = 
+			MedicationDataSaveHelper.medicationToJsonString(newMed);
+			
+			File newMedFile =
+			LocalData.jsonStringToJsonFile(jsonString, 
+			newMedFileName);
 
-			System.err.print(recoverable_error);
+			return newMedFile;
 
-			return equivalentMedFile;	
 		}
+		
+		catch(Exception e){
 
-
-
-
+			String error_message =
+			"The following Medication as follows was not saved " +
+			" due to an Exception:\n" + newMed.toString() + "\n" +
+			DefaultMedicationData.
+			DEFAULT_MEDICATION_FILE_ERROR_MESSAGE_SUFFIX; 
+			
+			Exception error = 
+			new Exception(error_message);		
+		
+			System.err.print(error);
+				
+			return DefaultMedicationData.DEFAULT_MEDICATION_FILE;
+		}	
+	}
 
 
 
@@ -509,49 +398,89 @@ public class MedicationData{
 */
 
 
-	// Saving to New Medication File //
-	// (contd.)
-			
-		try{
+	// Validate Medication File and Medication for Overwrite Function //
+	
+	// Checks if provided Medication file and provided Medication
+	// are a valid pair for an overwrite by verifying
+		
+		// Medication has not been saved already
+		// Medication and Medication file are actually different
+		
+	// Throws IllegalArgumentException if either check is failed
 
-			// Medication instance --> JSON-formatted String
 
-			String jsonString = 
-			MedicationDataSaveHelper.medicationToJsonString(newMed);
-			
-			String jsonFileName = 
-			MedicationDataSaveHelper.generateNewFileName();
+	public static void validateOverwritePair(File savedMedFile, 
+	Medication newMed) throws Exception{
 
-			// Write JSON-formatted String to new File
+		// First Check: newMed not saved already 
+ 
+		boolean newMedSavedAlready = 
+		SAVED_MEDICATION.containsKey(newMed);		
 
-			File jsonFile = new File("./" + jsonFileName);
-			jsonFile.createNewFile();
-			jsonFile.setWritable(true);
+		if(newMedSavedAlready){
 
-			FileWriter jsonFileWriter = new FileWriter(jsonFile);
-			jsonFileWriter.write(jsonString);
-			jsonFileWriter.close();
+			String error_message = 
 
-			return jsonFile;
-
+			"Request to overwrite an existing Medication file " + 
+			"with a different Medication that has already been " + 
+			"saved detected. Request deemed unnecessary and " +
+			"denied.\n";
+ 
+			throw new IllegalArgumentException(error_message);
 		}
-		
-		// Any exceptions raised in the above saving process lead to
-		// a default file being returned
 
-		catch(Exception e){
+		// Second Check: savedMedFile and newMed are different 
+	
+		Medication savedMed = 
+		getSavedMedicationFromSavedMedicationFile(savedMedFile);
+	
+		boolean newMedAndSavedMedFileAreSame = newMed.equals(savedMed);
+ 
+		if(newMedAndSavedMedFileAreSame){
 
-			String recoverable_error_message = "An exception " +
-			"occurred while saving. Returning default JSON file.\n";
+			String error_message =
+
+			"Request to overwrite an existing Medication file " +
+			"with an equivalent Medication detected. Request " + 
+			" deemed unnecessary and denied.\n";
+ 
+			throw new IllegalArgumentException(error_message);
+		}		
+	}
+
+/*
+				     Page 7
+
+<-- CTRL + B							    CTRL + F -->
+*/
+
+	
+	// Get Saved Medication From Saved Medication File Function //
+
+	// Essentially retrieves saved Medication key 
+	// for provided saved Medication file value in SAVED_MEDICATION
+	
+
+	public static Medication getSavedMedicationFromSavedMedicationFile(
+	File target_savedMedFile){
+
+		for(Medication savedMed : SAVED_MEDICATION.keySet()){
+
+			File savedMedFile = 
+			SAVED_MEDICATION.get(savedMed);
+
+			if(savedMedFile.equals(target_savedMedFile)){
 			
-			Exception recoverable_error = 
-			new Exception(recoverable_error_message);		
-		
-			System.err.print(recoverable_error);
-				
-			return DefaultMedicationData.DEFAULT_MEDICATION_FILE;
+				return savedMed;
+
+			}
 		}
-		
+
+		// SAVED_MEDICATION is a one-to-one mapping of key, values
+		// so this will always be accurate
+
+		return DefaultMedicationData.DEFAULT_MEDICATION;	
+
 	}
 
 
@@ -559,8 +488,25 @@ public class MedicationData{
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*
-				     Page 7
+				     Page 8
 
 <-- CTRL + B							      
 */
