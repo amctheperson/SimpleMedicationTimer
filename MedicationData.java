@@ -15,9 +15,10 @@ public class MedicationData{
 
 	PAGE	PURPOSE			FUNCTION SIGNATURE
 
-	1	STATIC VARIABLES	
+	1	Static Variables	
 
-	2	SAVE MED TO FILE	saveMedicationToJsonFile(Medication med)
+	2	SAVE MED TO FILE	saveMedicationToJsonFile(
+					Medication med)
 
 	3	LOAD MED FROM FILE	loadMedicationFromJsonFile(
 					File jsonFile)
@@ -26,16 +27,7 @@ public class MedicationData{
 		WITH NEW MED		File jsonFile, Medication newMed)
 
 	5	DELETE MED FILE		deleteMedicationFile(File jsonFile)			
-	6	Save Med to New File	saveMedicationToNewJsonFile(
-					Medication newMed)
-	
-	7	Med-Med File Pair	validateOverwritePair(
-		Valid for Overwrite	File savedMedFile, 
-					Medication newMed) 
-
-	8	Get Saved Med File	getSavedMedicationFromSaved
-		via Saved Med		MedicationFile(
-					File target_savedMedFile){
+	6	Get All Med Files	getAllMedicationJsonFilesHere() 
  
 	
 	
@@ -49,6 +41,14 @@ public class MedicationData{
 
 
 
+
+
+
+
+
+
+
+
 /*
 				     Page 0
 
@@ -56,7 +56,7 @@ public class MedicationData{
 */
 
 	
-	// STATIC VARIABLES // 
+	// Static Variables // 
 
 	
 	// One-to-One Mapping of Medication
@@ -74,7 +74,7 @@ public class MedicationData{
 			SAVED_MEDICATION = new HashMap<Medication,File>();
 
 			ArrayList<File> allMedicationJsonFiles = 
-			MedicationDataHelper.getAllMedicationJsonFilesHere();
+			getAllMedicationJsonFilesHere();
 
 			for(File savedMedFile : allMedicationJsonFiles){
 
@@ -85,6 +85,7 @@ public class MedicationData{
 		
 			}	
 		}
+
 		catch(Exception e){
 
 			String error_message = "Could not initialize static " +
@@ -96,7 +97,6 @@ public class MedicationData{
 
 		} 
 	}
-
 
 
 
@@ -140,14 +140,14 @@ public class MedicationData{
 
 		// and update SAVED_MEDICATION HashMap accordingly
 		
-		File new_medFile = saveMedicationToNewJsonFile(med);
+		File new_medFile = 
+		MedicationDataHelper.saveMedicationToNewJsonFile(med);
 		
 		SAVED_MEDICATION.put(med, new_medFile);
 
 		return new_medFile;
 
 	}
-
 
 
 
@@ -229,7 +229,6 @@ public class MedicationData{
 
 	// OVERWRITE MEDICATION FILE WITH NEW MEDICATION // 
 
-
 	// Overwrites only unsaved new Medication onto a saved Medication file
 	// that is logically different
 	
@@ -241,7 +240,8 @@ public class MedicationData{
 
 		try{
 
-			validateOverwritePair(savedMedFile, newMed);
+			MedicationDataHelper.validateOverwritePair(
+			savedMedFile, newMed);
 
 		}
 
@@ -253,7 +253,7 @@ public class MedicationData{
 
 		}
 		
-		Medication savedMed = 
+		Medication savedMed = MedicationDataHelper.
 		getSavedMedicationFromSavedMedicationFile(savedMedFile);
 
 		String savedMedFileName = savedMedFile.getName();
@@ -297,7 +297,7 @@ public class MedicationData{
 
 			// Update SAVED_MEDICATION upon successful deletion
 
-			Medication savedMed = 
+			Medication savedMed = MedicationDataHelper.
 			getSavedMedicationFromSavedMedicationFile(medFile);
 
 			SAVED_MEDICATION.remove(savedMed);
@@ -341,173 +341,59 @@ public class MedicationData{
 */
 
 
-	// Saving to New Medication File //
+	// Get All Locally Saved Medication Files Function // 
+	// (Assists in populating SAVED_FILES upon initialization)
 
-	// Saves provided Medication to new JSON file and returns said file
+	// Returns ArrayList of Files representing all Medication JSON Files
+	// in the local directory
 
-	// Note: if an Exception prevents saving from occurring
-	// this function returns the default Medication file 
+	// Ths function excludes the default Medication file
+	// in its retrieval as it should not be accessible directly
 	
+	// Note: This function is privated
+	// as it should only be used once in this class 
 	
-	public static File saveMedicationToNewJsonFile(Medication newMed)
+	private static ArrayList<File> getAllMedicationJsonFilesHere() 
 	throws Exception{
+
+		// ArrayList used for collecting Files instead of Array
+		// because number of incoming Files is unknown
+		
+		ArrayList<File> fileArrayList = new ArrayList<File>();
+					
+		File currentDirectory = new File("./");
 				
-		try{
+		for(File file : currentDirectory.listFiles()){
 
-			String newMedFileName = 
-			MedicationDataSaveHelper.generateNewFileName();
+			// Skip all subdirectories
 
-			String jsonString = 
-			MedicationDataSaveHelper.medicationToJsonString(newMed);
-			
-			File newMedFile =
-			LocalData.jsonStringToJsonFile(jsonString, 
-			newMedFileName);
+			if(file.isDirectory()){
+				continue;
+			}
 
-			return newMedFile;
+			// Skip default Medication file
 
+			File defaultMedicationFile = 
+			DefaultMedicationData.DEFAULT_MEDICATION_FILE;
+
+			if(file.equals(defaultMedicationFile)){
+				continue;
+			}
+
+			// Include Files that fit Medication file name format
+
+			if(MedicationDataHelper.isMedFileByName(file)){
+				fileArrayList.add(file);
+			}
 		}
-		
-		catch(Exception e){
 
-			String error_message =
-			"The following Medication as follows was not saved " +
-			" due to an Exception:\n" + newMed.toString() + "\n" +
-			DefaultMedicationData.
-			DEFAULT_MEDICATION_FILE_ERROR_MESSAGE_SUFFIX; 
-			
-			Exception error = 
-			new Exception(error_message);		
-		
-			System.err.print(error);
-				
-			return DefaultMedicationData.DEFAULT_MEDICATION_FILE;
-		}	
+		return fileArrayList;
 	}
-
-
-
-
-
 
 
 /*
 				     Page 6
 
-<-- CTRL + B							    CTRL + F -->
-*/
-
-
-	// Validate Medication File and Medication for Overwrite Function //
-	
-	// Checks if provided Medication file and provided Medication
-	// are a valid pair for an overwrite by verifying
-		
-		// Medication has not been saved already
-		// Medication and Medication file are actually different
-		
-	// Throws IllegalArgumentException if either check is failed
-
-
-	public static void validateOverwritePair(File savedMedFile, 
-	Medication newMed) throws Exception{
-
-		// First Check: newMed not saved already 
- 
-		boolean newMedSavedAlready = 
-		SAVED_MEDICATION.containsKey(newMed);		
-
-		if(newMedSavedAlready){
-
-			String error_message = 
-
-			"Request to overwrite an existing Medication file " + 
-			"with a different Medication that has already been " + 
-			"saved detected. Request deemed unnecessary and " +
-			"denied.\n";
- 
-			throw new IllegalArgumentException(error_message);
-		}
-
-		// Second Check: savedMedFile and newMed are different 
-	
-		Medication savedMed = 
-		getSavedMedicationFromSavedMedicationFile(savedMedFile);
-	
-		boolean newMedAndSavedMedFileAreSame = newMed.equals(savedMed);
- 
-		if(newMedAndSavedMedFileAreSame){
-
-			String error_message =
-
-			"Request to overwrite an existing Medication file " +
-			"with an equivalent Medication detected. Request " + 
-			" deemed unnecessary and denied.\n";
- 
-			throw new IllegalArgumentException(error_message);
-		}		
-	}
-
-/*
-				     Page 7
-
-<-- CTRL + B							    CTRL + F -->
-*/
-
-	
-	// Get Saved Medication From Saved Medication File Function //
-
-	// Essentially retrieves saved Medication key 
-	// for provided saved Medication file value in SAVED_MEDICATION
-	
-
-	public static Medication getSavedMedicationFromSavedMedicationFile(
-	File target_savedMedFile){
-
-		for(Medication savedMed : SAVED_MEDICATION.keySet()){
-
-			File savedMedFile = 
-			SAVED_MEDICATION.get(savedMed);
-
-			if(savedMedFile.equals(target_savedMedFile)){
-			
-				return savedMed;
-
-			}
-		}
-
-		// SAVED_MEDICATION is a one-to-one mapping of key, values
-		// so this will always be accurate
-
-		return DefaultMedicationData.DEFAULT_MEDICATION;	
-
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-				     Page 8
-
-<-- CTRL + B							      
+<-- CTRL + B							    
 */
 }

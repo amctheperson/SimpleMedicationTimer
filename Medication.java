@@ -49,6 +49,7 @@ public class Medication{
 
 
 
+
 /*
 				     Page 0
 
@@ -81,6 +82,7 @@ public class Medication{
 	// User-determined
 
 	private double totalHoursOfClarity;
+
 
 
 
@@ -161,6 +163,7 @@ public class Medication{
 
 
 
+
 /*
 				     Page 2
 
@@ -200,17 +203,18 @@ public class Medication{
 	
 	// (Note to self: This will likely get called a lot from the front-end)
 		
-	public String getCompleteInfo(){
+	public String getDisplayInfo(){
 
 		return name + " " +  dosage + " " + type;
 
 	}
 
+	public String getCompleteInfo(){
 
-
-
-
-
+		return getDisplayInfo() + " - " + 
+		Double.toString(totalHoursOfClarity) + " hrs mental clarity";
+	}	
+	
 
 
 
@@ -273,6 +277,7 @@ public class Medication{
 
 
 
+
 /*
 				     Page 4
 
@@ -285,8 +290,10 @@ public class Medication{
 
 	@Override
 	public String toString(){
-
-		String printable = "Behold, a Medication object!\n";
+		
+		String printable = "";
+		
+		//String printable = "Behold, a Medication object!\n";
 
 		printable += 
 				"\tName: " + name + "\n" +
@@ -297,7 +304,6 @@ public class Medication{
 
 		return printable; 
 	}
-
 
 
 
@@ -385,6 +391,7 @@ public class Medication{
 
 
 
+
 /*
 				     Page 6
 
@@ -422,6 +429,7 @@ public class Medication{
 			totalHoursOfClarity == otherMed_thoc;
 
 	}
+
 
 
 
@@ -497,10 +505,10 @@ public class Medication{
 
 
 
+
 /*
 				     Page 8
 
 <-- CTRL + B							    
-*/
-	
+*/	
 }

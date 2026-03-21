@@ -11,66 +11,51 @@ import java.time.ZoneId;
 
 public class Test{
 
-	public static String getLastModifiedString(File file) throws Exception{
-
-		long mod_epoch_milliseconds = file.lastModified();
-		long mod_epoch_seconds = mod_epoch_milliseconds / 1000;
-
-		LocalDateTime mod_LDT = 
-		LocalDateTime.ofEpochSecond(
-			
-			mod_epoch_seconds,
-			0,
-			ZoneOffset.of("-7")
-		);
-	
-		String mod_string = mod_LDT.format(UserData.DISPLAY_FORMAT);	
-
-		return mod_string;
-
-	}
-
-
 	public static void main(String[] args) throws Exception{
 
-		File userFile = UserData.USER_FILE;
-		
-		String firstModifiedTime = getLastModifiedString(userFile); 
+		MedicationData.SAVED_MEDICATION.forEach(
 
-		Medication testMed1 =
+			(savedMed, savedMedFile) -> {
+
+				System.out.println(
+				savedMedFile.getName() + " represents:\n" + 
+				savedMed.toString()); 
+
+			}	
+		);		
+
+
+		Medication newMed = 
 		new Medication(
-	
-			"Adderall",
-			"20 mg",
-			"XR",
-			3.0
-
+				"Concerta",
+				"27mg",
+				"XR",
+				2.0
 		);
 
-		Medication testMed2 =
-		new Medication(
+		File knownMedFile = new File("Medication_3.json"); 
+ 
+		MedicationData.overwriteJsonFileWithNewMedication(
+		knownMedFile, newMed);
 	
-			"Adderall",
-			"10 mg",
-			"IR",
-			2.0
+		MedicationData.SAVED_MEDICATION.forEach(
 
-		);
+			(savedMed, savedMedFile) -> {
 
+				System.out.println(
+				savedMedFile.getName() + " represents:\n" + 
+				savedMed.toString()); 
 
-		Medication[] testDailyRoutine = {testMed1, testMed2};				
-		User newUser = new User("Andrew", testDailyRoutine);
- 	
-		UserData.saveUserToJsonFile(newUser);
+			}	
+		);		
 		
-		User loadedNewUser = UserData.loadUserFromJsonFile(); 
+		/*
+		Medication otherTestMed = 
+		MedicationData.loadMedicationFromJsonFile(testMedFile);
 
-		String secondModifiedTime = getLastModifiedString(userFile);
+		boolean equalityTest = testMed.equals(otherTestMed);
 
-		//System.out.println(oldUser);	
-		System.out.println(firstModifiedTime);
-		System.out.println(loadedNewUser);
-		System.out.println(secondModifiedTime);		
-		
+		System.out.println(equalityTest);	
+		*/
 	}
 }

@@ -8,6 +8,8 @@ import java.io.FileReader;
 
 import java.nio.CharBuffer;
 
+import java.util.ArrayList;
+
 public class LocalData{
 
 
@@ -38,8 +40,6 @@ public class LocalData{
 	JSON files for Medication and User instances.
 
 	*/
-
-
 
 
 
@@ -226,6 +226,44 @@ public class LocalData{
 <-- CTRL + B							    CTRL + F -->
 */
 
+	// Validate JsonObject for Conversion to a Certain Class Function // 
+	
 
+	// Checks if provided JsonObject has all the required data needed to
+	// call a constructor for a certain class 
 
+	// Throws IllegalArgumentException if not
+
+	public static void validateJsonObjectForClassConversion(
+	JsonObject jsonObject, String[] class_required_properties)
+	throws Exception{
+			
+		ArrayList<String> missing_properties = new ArrayList<String>();
+
+		for (String property : class_required_properties){
+						
+			if(!jsonObject.containsKey(property)){
+				
+				missing_properties.add(property);
+					
+			}
+		}
+				
+		if (missing_properties.size() > 0){
+				
+			String error_message =
+				"jsonObject invalid for class conversion " +
+				"due to missing " + 
+				"the following class properties:\n "; 
+
+			for (String property : missing_properties){
+				
+				error_message += property + "\n";
+
+			}
+
+			throw new IllegalArgumentException(error_message);
+
+		}	
+	}
 }

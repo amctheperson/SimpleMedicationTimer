@@ -29,13 +29,14 @@ public class DefaultMedicationData {
 
 	Backup data is derived from the locally saved JSON Medication file
 	"DefaultMedication.json" representing the supplement/alternative to
-	ADHD medication that I typically use--caffeine, baby!
+	ADHD medication that I typically use (caffeine)
 
 	Note that this default Medication file is not counted as a Medication
 	file or treated as such as it should only be displayed and used 
 	in the case of a save or load error.
 			
 	*/
+
 
 
 
@@ -87,6 +88,7 @@ public class DefaultMedicationData {
 	DEFAULT_MEDICATION_FILE_ERROR_MESSAGE_SUFFIX = 
 	"Returning default Medication file as an alternative.";
 	
+
 
 
 
@@ -160,6 +162,7 @@ public class DefaultMedicationData {
 
 
 
+
 /*
 				     Page 2
 
@@ -177,7 +180,7 @@ public class DefaultMedicationData {
 	
 		try{
 			tempJsonString = 
-			MedicationDataLoadHelper.jsonFileToJsonString(
+			LocalData.jsonFileToJsonString(
 				DEFAULT_MEDICATION_FILE);		
 		}
 		catch (Exception e){
@@ -198,6 +201,7 @@ public class DefaultMedicationData {
 	protected static final String DEFAULT_JSON_STRING_MESSAGE_SUFFIX = 
 	"Returning a JSON-formatted String representing the default " + 
 	"Medication instance as an alternative.";
+
 
 
 
@@ -252,6 +256,7 @@ public class DefaultMedicationData {
 	protected static final String DEFAULT_JSON_OBJECT_MESSAGE_SUFFIX = 
 	"Returning a JSONObject hashmap representing the default Medication " + 
 	"instance as an alternative.";
+
 
 
 

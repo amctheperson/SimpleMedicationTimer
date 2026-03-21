@@ -4,31 +4,31 @@ import java.lang.IllegalArgumentException;
 
 public class MedicationDataHelper{
 
+
 	
 	/*
 	
-	PAGE	PURPOSE				FUNCTION SIGNATURE
-
-	1-2	ALL MED FILES GETTER		getAllMedicationJsonFilesHere() 
-
-	3	MED FILE EQUIV TO MED GETTER	getExistingMedicationJsonFile(
-						Medication med)
+	PAGE	PURPOSE			FUNCTION SIGNATURE
 	
-	4	MED FILE-MED COMPARATOR		areJsonFileAndMedicationSame(
-						File jsonFile, Medication med)
+	1	Save Med to New File	saveMedicationToNewJsonFile(
+					Medication newMed)
+	
+	2	Med-Med File Pair	validateOverwritePair(
+		Valid for Overwrite	File savedMedFile, 
+					Medication newMed) 
 
-	5	Med file validator		isMedFileByName(File file)
+	3	Get Saved Med File	getSavedMedicationFromSaved 
+		via Saved Med		MedicationFile(
+					File target_savedMedFile){
 	
-	
+	4	Verify file is in	isMedFileByName(File file)
+		Med File Name Format
+		
 	
 		
-	This class contains functions involving Medication JSON files.
-
-	These functions are primarily for assisting in the save and
-	load features of the MedicationData class, 
-	however they can also be seen used in the MedicationDataSaveHelper and 
-	MedicationDataLoadHelper classes as well.
-			
+	This class contains functions that assist in 
+	MedicationData functionality.
+	
 	*/
 
 
@@ -55,52 +55,52 @@ public class MedicationDataHelper{
 
 								    CTRL + F -->
 */
-
-
-	// GETTING ALL MEDICATION FILES SAVED LOCALLY // 
 	
-	// Retrieves all Medication JSON files locally saved
-	// inside the current directory
 
-	// Returns an ArrayList of File objects,
-	// each representing a valid Medication JSON file
+	// Saving to New Medication File Function //
+	// (Assists mainly in saveMedicationToJsonFile in MedicationData)
+	
+	// Saves provided Medication to new JSON file and returns said file
 
-	public static ArrayList<File> getAllMedicationJsonFilesHere() 
+	// Note: if an Exception prevents saving from occurring
+	// this function returns the default Medication file 
+	
+	
+	public static File saveMedicationToNewJsonFile(Medication newMed)
 	throws Exception{
+				
+		try{
 
-		// ArrayList is used to collect the returnable File objects
-		// because the number of incoming valid files is unknown
-	
-		// (Note to self: consider using a set here 
-		// if application is running slow)
-		
-		ArrayList<File> fileArrayList = new ArrayList<File>();
-					
-		// Open the current directory as a File object
+			String newMedFileName = 
+			MedicationDataSaveHelper.generateNewFileName();
 
-		File curDir = new File("./");
+			String jsonString = 
+			MedicationDataSaveHelper.medicationToJsonString(newMed);
 			
-		// For all file/subfolders in the current directory
-	
-		for(File file : curDir.listFiles()){
+			File newMedFile =
+			LocalData.jsonStringToJsonFile(jsonString, 
+			newMedFileName);
 
-			// Skip all subdirectories
+			return newMedFile;
 
-			if(file.isDirectory()){
-				continue;
-			}
+		}
+		
+		catch(Exception e){
 
-			// Skip the default Medication file,
-			// as it is only used for error recovery
-
-			File defaultMedicationFile = 
-			DefaultMedicationData.DEFAULT_MEDICATION_FILE;
-
-			if(file.equals(defaultMedicationFile)){
-				continue;
-			}
-
-
+			String error_message =
+			"The following Medication as follows was not saved " +
+			" due to an Exception:\n" + newMed.toString() + "\n" +
+			DefaultMedicationData.
+			DEFAULT_MEDICATION_FILE_ERROR_MESSAGE_SUFFIX; 
+			
+			Exception error = 
+			new Exception(error_message);		
+		
+			System.err.print(error);
+				
+			return DefaultMedicationData.DEFAULT_MEDICATION_FILE;
+		}	
+	}
 
 
 
@@ -114,179 +114,122 @@ public class MedicationDataHelper{
 */
 
 
-	// GETTING ALL MEDICATION FILES SAVED LOCALLY // 
-	// (contd.)
+	// Validate Medication File and Medication for Overwrite Function //
+	// (Assists in overwriteJsonFileWithNewMedication in MedicationData)
+	
+	// Checks if provided Medication file and provided Medication
+	// are a valid pair for an overwrite by verifying
+		
+		// Medication has not been saved already
+		// Medication and Medication file are actually different
+		
+	// Throws IllegalArgumentException if either check is failed
 
-			// After all edge cases have been handled
 
-			// Check if file is a Medication file
+	public static void validateOverwritePair(File savedMedFile, 
+	Medication newMed) throws Exception{
 
-			if(MedicationDataHelper.isMedFileByName(file)){
-				fileArrayList.add(file);
-			}
+		// First Check: newMed not saved already 
+ 
+		boolean newMedSavedAlready = 
+		MedicationData.SAVED_MEDICATION.containsKey(newMed);		
+
+		if(newMedSavedAlready){
+
+			String error_message = 
+
+			"Request to overwrite an existing Medication file " + 
+			"with a different Medication that has already been " + 
+			"saved detected. Request deemed unnecessary and " +
+			"denied.\n";
+ 
+			throw new IllegalArgumentException(error_message);
 		}
 
-		return fileArrayList;
+		// Second Check: savedMedFile and newMed are different 
+	
+		Medication savedMed = 
+		getSavedMedicationFromSavedMedicationFile(savedMedFile);
+	
+		boolean newMedAndSavedMedFileAreSame = newMed.equals(savedMed);
+ 
+		if(newMedAndSavedMedFileAreSame){
+
+			String error_message =
+
+			"Request to overwrite an existing Medication file " +
+			"with an equivalent Medication detected. Request " + 
+			" deemed unnecessary and denied.\n";
+ 
+			throw new IllegalArgumentException(error_message);
+		}		
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*
 				     Page 2
 
 <-- CTRL + B							    CTRL + F -->
 */
+
+	
+	// Get Saved Medication From Saved Medication File Function //
+	// (Assist function used throughout MedicationData and its related
+	// helper classes)
+
+	// Retrieves saved Medication key for provided saved Medication file 
+	// value in MedicationData.SAVED_MEDICATION
 	
 
-	// GETTING THE MEDICATION FILE EQUIVALENT TO A MEDICATION INSTANCE // 
+	public static Medication getSavedMedicationFromSavedMedicationFile(
+	File target_savedMedFile){
 
-	// Retrieves the Medication JSON File saved locally that is equivalent
-	// to the provided Medication instance
+		for(Medication savedMed : 
+		MedicationData.SAVED_MEDICATION.keySet()){
 
-	// Returns the default Medication file
-	// if no equivalent Medication JSON File was found
+			File savedMedFile = 
+			MedicationData.SAVED_MEDICATION.get(savedMed);
 
-	// NOTE: only Medication instances proven to be saved already via
-	// MedicationDataSaveHelper.checkIfSavedAlready(Medication newMed)
-	// should be passed to this function 
+			if(savedMedFile.equals(target_savedMedFile)){
+			
+				return savedMed;
 
-	public static File getExistingMedicationJsonFile(Medication med)
-	throws Exception{
-		
-		// Check every existing Medication JSON file
-		// until one equivalent to the provided Med is found
-
-		ArrayList<File> allMedFiles = getAllMedicationJsonFilesHere();
-		
-		for (File existingMedFile : allMedFiles){
-
-			boolean fileAndMedAreSame = 
-			areJsonFileAndMedicationSame(
-				existingMedFile, med);
-
-			if(fileAndMedAreSame){
-				return existingMedFile;
-			}			
+			}
 		}
 
-		// If no existing and equivalent Med file ever found
-		// raise a recoverable error
-		// and return the default Medication file
-	
-		String recoverable_error_message = 
-		"getExistingMedicationJsonFile(Medication med) was called on " +
-		"a Medication instance that does not have an existing and " + 
-		"equivalent JSON file already saved locally. " +
-		DefaultMedicationData.
-		DEFAULT_MEDICATION_FILE_ERROR_MESSAGE_SUFFIX + "\n"; 
+		// SAVED_MEDICATION is a one-to-one mapping of key, values
+		// so this will always be accurate
 
-		IllegalArgumentException recoverable_error = 
-		new IllegalArgumentException(recoverable_error_message);
-
-		System.err.print(recoverable_error);
-
-		return DefaultMedicationData.DEFAULT_MEDICATION_FILE;
+		return DefaultMedicationData.DEFAULT_MEDICATION;	
 
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*
 				     Page 3
 
 <-- CTRL + B							    CTRL + F -->
 */
-	
-	
-	// COMPARING A MEDICATION FILE TO A MEDICATION INSTANCE //
-	
-	// Checks if provided Medication JSON file
-	// and provided Medication instance are equivalent
 
-	public static boolean areJsonFileAndMedicationSame( 
-	File jsonFile, Medication med) throws Exception{
-
-		Medication medFromFile = 
-		MedicationData.loadMedicationFromJsonFile(jsonFile);
-
-		return medFromFile.equals(med);	
-	
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-				     Page 4
-
-<-- CTRL + B							    CTRL + F -->
-*/
-	
-	
+		
 	// Validating a File is a Medication JSON file // 
-	// (this is a secondary function)
+	// (Assists in getAllMedicationJsonFilesHere in MedicationData)
 
 	// Checks if a File object fits
 	// the Medication JSON file naming convention
@@ -296,7 +239,7 @@ public class MedicationDataHelper{
 
 		String fileName = file.getName();
 	
-		// Accepting the default Medication file directly
+		// Accepting default Medication file directly
 		// because it does not follow the naming convention
 
 		// but is still a valid Medication file
@@ -336,8 +279,8 @@ public class MedicationDataHelper{
 
 
 /*
-				     Page 5
+				     Page 4
 
 <-- CTRL + B							    
-*/		
+*/	
 }
