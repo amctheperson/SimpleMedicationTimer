@@ -130,16 +130,17 @@ public class UserData{
 
 		for (Medication routineMed: user.getDailyRoutine()){
 			
-			boolean routineMedSavedCheck = MedicationDataSaveHelper.			checkIfSavedAlready(routineMed);
+			boolean routineMedSavedCheck = 
+			MedicationData.SAVED_MEDICATION.containsKey(
+			routineMed);
 
 			if (!routineMedSavedCheck){
 				
-				File routineMedFile = MedicationData.
+				File routineMedFile = MedicationDataHelper.
 				saveMedicationToNewJsonFile(routineMed);
 			
 			}
 		}
-
 
 
 
@@ -190,12 +191,12 @@ public class UserData{
 			try{
 		
 				boolean takenMedSavedCheck = 
-				MedicationDataSaveHelper.
-				checkIfSavedAlready(takenMed);
+				MedicationData.SAVED_MEDICATION.containsKey(
+				takenMed);
 
 				if (!takenMedSavedCheck){
 					
-					MedicationData.
+					MedicationDataHelper.
 					saveMedicationToNewJsonFile(
 					takenMed);		
 				}

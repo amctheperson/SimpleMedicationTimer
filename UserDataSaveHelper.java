@@ -137,8 +137,8 @@ public class UserDataSaveHelper {
 			Medication routineMed = user_dailyRoutine[i];
 			
 			File routineMedFile =
-			MedicationDataHelper.getExistingMedicationJsonFile(
-				routineMed);
+
+			MedicationData.SAVED_MEDICATION.get(routineMed);
 
 			String routineMedFileName = routineMedFile.getName();
 
@@ -197,8 +197,7 @@ public class UserDataSaveHelper {
 
 				try{
 					File takenMedFile =
-					MedicationDataHelper.
-					getExistingMedicationJsonFile(
+					MedicationData.SAVED_MEDICATION.get(
 					takenMed);
 
 					String takenMedFileName = 
@@ -214,6 +213,7 @@ public class UserDataSaveHelper {
 					);
 
 				}
+
 
 
 
