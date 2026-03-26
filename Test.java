@@ -1,61 +1,54 @@
-import com.github.cliftonlabs.json_simple.JsonObject;
-import java.io.File;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
-import java.time.ZoneOffset;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+//import java.lang.Record;
 
 public class Test{
 
+	public static Medication loadTestMedication() throws Exception{
+
+		Medication testMed = null;
+
+		User loadedUser = UserData.loadUserFromJsonFile();
+		for (Medication med: loadedUser.getDailyRoutine()){
+
+			if(	med.getName().equals("Adderall") &&
+				med.getDosage().equals("20mg")
+			){
+
+				testMed = med;	
+				break;
+			}	
+
+		}
+
+		return testMed;
+			
+	}
+
 	public static void main(String[] args) throws Exception{
 
-		MedicationData.SAVED_MEDICATION.forEach(
+		UserMedication.RemainingTime testRT = 
+		new UserMedication.RemainingTime(1,27);
 
-			(savedMed, savedMedFile) -> {
-
-				System.out.println(
-				savedMedFile.getName() + " represents:\n" + 
-				savedMed.toString()); 
-
-			}	
-		);		
-
-
-		Medication newMed = 
-		new Medication(
-				"Concerta",
-				"27mg",
-				"XR",
-				2.0
-		);
-
-		File knownMedFile = new File("Medication_3.json"); 
+		System.out.println(testRT);
  
-		MedicationData.overwriteJsonFileWithNewMedication(
-		knownMedFile, newMed);
-	
-		MedicationData.SAVED_MEDICATION.forEach(
+		/*	
+		Medication testMed = loadTestMedication();
 
-			(savedMed, savedMedFile) -> {
-
-				System.out.println(
-				savedMedFile.getName() + " represents:\n" + 
-				savedMed.toString()); 
-
-			}	
-		);		
+		System.out.println(testMed);
 		
-		/*
-		Medication otherTestMed = 
-		MedicationData.loadMedicationFromJsonFile(testMedFile);
+		String testTakenAt_String = "Mar 25 2026 10:03 PM";
+		
+		LocalDateTime testTakenAt = LocalDateTime.parse(
+		testTakenAt_String, UserData.DISPLAY_FORMAT);
 
-		boolean equalityTest = testMed.equals(otherTestMed);
+		RemainingTime testRemainingTime = 
+		UserMedication.calculateRemainingTimeActive(
+		testMed, testTakenAt);	
 
-		System.out.println(equalityTest);	
+		System.out.println(testRemainingTime.remainingWholeHours());
+		System.out.println(testRemainingTime.minutes());
+
 		*/
 	}
 }

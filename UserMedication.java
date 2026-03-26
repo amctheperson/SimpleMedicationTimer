@@ -1,8 +1,10 @@
 import java.lang.IllegalArgumentException;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.time.temporal.ChronoUnit;
 
 public class UserMedication{
+
 
 	/*
 
@@ -11,16 +13,13 @@ public class UserMedication{
 	1-2	GET MOST RECENT		getMostRecentlyTakenMedication(
 		MED TAKEN		User user)
 
-	3	TODO
+	3-4	TIME LEFT OF		calculateRemainingTimeActive( 
+		ACTIVE MED		Medication med, LocalDateTime takenAt)
 
-
-	This class is a work in progress.
+	5	TODO
+ 											This class is a work in progress.
 	
 	*/
-
-
-
-
 
 
 
@@ -170,47 +169,124 @@ public class UserMedication{
 <-- CTRL + B							    CTRL + F -->
 */
 
-	
 
+	// CALCULATING REMAINING TIME ACTIVE OF TAKEN MEDICATION
+
+	// From current point in time
+	// calculates remaining hours and minutes left 
+	// of provided Medication taken at provided LocalDateTime
+		
+	// Returns data in Record (data-carrier) class RemainingTime
+
+	// Note to self:
+ 
+	// Record access in other classes should be treated
+	// like accessing a function from another class
+
+	// (i.e. 	UserMedication.RemainingTime = 
+	// 		new UserMedication.RemainingTime(2, 45);
+
+
+	public record RemainingTime(int remainingWholeHours, 
+	int remainingMinutes) {}
+
+	public static RemainingTime calculateRemainingTimeActive(
+	Medication med, LocalDateTime takenAt){
+
+		// Calculate total minutes of clarity med has
+
+		// First compare total minutes of clarity med has
+		// to minutes passed since med was last taken to now 
+	
+		double totalHoursOfClarity = 
+		med.getTotalHoursOfClarity(); 
+	
+		int totalMinutesOfClarity = 
+		UserMedicationHelper.calculateTotalMinutesOfClarity(
+		totalHoursOfClarity);
+
+		LocalDateTime currentTime = LocalDateTime.now();
+
+		// LocalDateTime function "until" returns long 
+		// casting to int for ease of implementation
+
+		int minutesSinceMedTaken = 
+		(int) takenAt.until(currentTime, ChronoUnit.MINUTES);
+ 
+		// FUNCTION CONTINUES ON PAGE 4 -->
+
+
+
+
+
+
+/*
+				     Page 3
+
+<-- CTRL + B							    CTRL + F -->
+*/
+
+
+	// CALCULATING REMAINING TIME ACTIVE OF TAKEN MEDICATION
+	// (contd.)
+
+
+		// Return no time remaining (0h0m) if most recent 
+		// Medication taken by user is no longer active
+
+		if(minutesSinceMedTaken >= totalMinutesOfClarity){
+
+			return new RemainingTime(0,0);	
+
+		}
+	
+		int remainingMinutesOfClarity = 
+		totalMinutesOfClarity - minutesSinceMedTaken; 
+	
+		int remainingTime_minutes = remainingMinutesOfClarity % 60;
+
+		int remainingTime_wholeHours = 
+		(remainingMinutesOfClarity - remainingTime_minutes) / 60;
+
+		return new RemainingTime(
+		remainingTime_wholeHours, remainingTime_minutes);
+		
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+				     Page 4
+
+<-- CTRL + B							    CTRL + F -->
+*/
+
+	
 	/*
 
 	TODO
-
-	make this a minutes left of recent med, return 0 if negative
-	
-	public boolean isLastTakenMedicationStillActiveForUser(
-	User user, Medication med) {
-
-	isMostRecentlyTakenMedicationStillActive{
-
-		Medication mostRecentMed = getMostRecentlyTakenMedication(user);
-		
-		LocalDateTime mostRecentMed_takenAt = user.getWhenLastTaken	
-				
-
-	}
-
-
-
-	if (!hasUserTakenMedicationBefore(user, med)){
-
-		String error_message = 
-		"Function invo"
-
-		return false;		
-
-
-	}
-
-
-		LocalDateTime whenMedLastTaken = whenLastTaken.get(med)	
-
-	}
-	
-	lastMedTakenByUser <--static var?? why not
-
-	make new exception cause why not forrrr last taken 
-
 
 	shouldUserTakeMedNow
 
@@ -225,17 +301,41 @@ public class UserMedication{
 		update user
 		update lastMedTakenByUser
 	
-	isLastMedActive
-	
-	remainingTimeOnActiveMed	
-
-
 	*/
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*
-				     Page 3
+				     Page 5
 
 <-- CTRL + B							    CTRL + F -->
 */
