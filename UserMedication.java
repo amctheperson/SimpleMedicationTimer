@@ -4,6 +4,7 @@ import java.util.Map;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class UserMedication{
 
@@ -11,9 +12,10 @@ public class UserMedication{
 	/*
 
 	PAGE	PURPOSE			FUNCTION SIGNATURE
-
+					
 	1-2	GET MOST RECENT		getMostRecentlyTakenMedication(
-		MED TAKEN		User user)
+		MED TAKEN		HashMap<Medication, LocalDateTime> 
+					whenLastTaken)
 
 	3-4	TIME LEFT OF		calculateRemainingTimeActive( 
 		ACTIVE MED		Medication med, LocalDateTime takenAt)
@@ -47,8 +49,6 @@ public class UserMedication{
 
 
 
-
-
 /*
 				     Page 0
 
@@ -56,18 +56,18 @@ public class UserMedication{
 */
 
 
-	// GET MOST RECENTLY TAKEN MED BY USER FUNCTION//
+	// GET MOST RECENTLY TAKEN MED FUNCTION//
 
 	// Returns Medication with most recent LocalDateTime value
 	// in whenLastTaken HashMap of provided User
 
 
-	public static Medication getMostRecentlyTakenMedication(User user){
-	
-		// If no Medication ever been reportedly taken by user
-		// return default Medication
+	public static Medication getMostRecentlyTakenMedication(
+	HashMap<Medication, LocalDateTime> whenLastTaken){
 
-		if (user.getWhenLastTaken().isEmpty()){
+		// Error: No Medication ever reportedly taken	
+
+		if (whenLastTaken.isEmpty()){
 
 			String error_message = 
 
@@ -87,7 +87,7 @@ public class UserMedication{
 		DefaultMedicationData.DEFAULT_MEDICATION;
 	
 
-		// (function contd. on Page 2)
+		// (function contd. on Page 2) -->
 
 
 
@@ -124,10 +124,12 @@ public class UserMedication{
 		// therefore for each loop done instead 	
 	
 		for (Map.Entry<Medication, LocalDateTime> 
-		user_wlt_Entry : user.getWhenLastTaken().entrySet()){
+		whenLastTaken_Entry : whenLastTaken.entrySet()){
 
-			Medication takenMed = user_wlt_Entry.getKey();
-			LocalDateTime takenMedAt = user_wlt_Entry.getValue();
+			Medication takenMed = whenLastTaken_Entry.getKey();
+
+			LocalDateTime takenMedAt = 
+			whenLastTaken_Entry.getValue();
 
 			if(mostRecentMed.equals(
 				DefaultMedicationData.DEFAULT_MEDICATION)){
@@ -137,7 +139,7 @@ public class UserMedication{
 			}
 
 			LocalDateTime mostRecentMedAt = 
-			user.getWhenLastTaken().get(mostRecentMed);
+			whenLastTaken.get(mostRecentMed);
 
 			if (takenMedAt.isAfter(mostRecentMedAt)){
 
@@ -150,8 +152,6 @@ public class UserMedication{
 	}
 
 				
-
-
 
 
 
@@ -293,7 +293,7 @@ public class UserMedication{
 	public static boolean isMostRecentMedicationStillActive(User user){
 		
 		Medication mostRecentMed = 
-		getMostRecentlyTakenMedication(user);
+		getMostRecentlyTakenMedication(user.getWhenLastTaken());
 
 		// Edge case: Default Medication returned as most recent Med
   
@@ -401,6 +401,12 @@ public class UserMedication{
 	/*
 
 	TODO
+
+	refactor method that takes User lol, should only be taking
+	whenLastTaken and.... Medication
+
+		obv exception and return false if provided Medication
+		not in whenLastTaken
 	
 	public static boolean HasDurationSinceLastRoutinePassed(LocalDateTime)
 		// define static DURATION BETWEEN ROUTINES
