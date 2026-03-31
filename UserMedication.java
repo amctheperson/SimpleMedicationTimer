@@ -71,9 +71,9 @@ public class UserMedication{
 
 			String error_message = 
 
-			"\nFunction for getting User\'s most recently taken " +
-			"Medication called on User with no reported history." +
-			"\n" + DefaultMedicationData.
+			"\nFunction for getting most recently taken " +
+			"Medication called on HashMap with no reported " + 
+			"history.\n" + DefaultMedicationData.
 			DEFAULT_MEDICATION_ERROR_MESSAGE_SUFFIX + "\n";
 
 			System.err.print(new IllegalArgumentException(
