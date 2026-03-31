@@ -16,13 +16,13 @@ public class UserMedication{
 	3-4	TIME LEFT OF		calculateRemainingTimeActive( 
 		ACTIVE MED		Medication med, LocalDateTime takenAt)
 
-	5	TODO
+	5	CHECK IF MOST RECENT	isMostRecentMedicationStillActive(
+		MED STILL ACTIVE	User user)
+	
+	6	TODO			
  											This class is a work in progress.
 	
 	*/
-
-
-
 
 
 
@@ -283,12 +283,80 @@ public class UserMedication{
 <-- CTRL + B							    CTRL + F -->
 */
 
+
+	// CHECK IF MOST RECENT MED TAKEN STILL ACTIVE FUNCTION
+	
+	// Checks if most recent Medication still actively providing 
+	// mental clarity for user	
+
+	public static boolean isMostRecentMedicationStillActive(User user){
+		
+		Medication mostRecentMed = 
+		getMostRecentlyTakenMedication(user);
+
+		// Edge case: Default Medication returned as most recent Med
+  
+		// Indicates that the most recent Medication does not exist
+		// therefore no Medication is still active
+
+		if(mostRecentMed.equals(
+		DefaultMedicationData.DEFAULT_MEDICATION)){
+
+			return false;
+
+		}		
+
+		// mostRecentMed guaranteed to exist as key inside
+		// whenLastTaken of user
+
+		LocalDateTime mostRecentMed_takenAt = 
+		user.getWhenLastTaken().get(mostRecentMed);
+
+		RemainingTime timeLeftActive = 
+		calculateRemainingTimeActive(
+			mostRecentMed, 
+			mostRecentMed_takenAt
+		);
+
+		// No active time remains on mostRecentMed
+
+		if(	timeLeftActive.remainingWholeHours() == 0 &&
+			timeLeftActive.remainingMinutes() == 0 	){
+
+			return false;
+
+		}
+		
+		return true; 
+
+	}
+
+
+
+	
+/*
+				     Page 5
+
+<-- CTRL + B							    CTRL + F -->
+*/
+
+
 	
 	/*
 
 	TODO
+	
+	isMedNextInRoutine
+		
+		exception/false if not in dailyRoutine
+		
+		if next one check if most recent med was lastTaken on diff Day
 
-	shouldUserTakeMedNow
+	WasTakenYesterdayOrEarlier(LocalDateTime)
+
+	nextMedInRoutine --> UserMedHelper
+
+	shouldUserTakeMedNow --> UserMed
 
 		returns boolean obv
 
@@ -296,7 +364,9 @@ public class UserMedication{
 
 		to see prev med and check if lastTaken		
 
-	takeMed
+		if mostrecentmed lowest, check first item for nextMed
+	
+	takeMed --> userMed
 
 		update user
 		update lastMedTakenByUser
