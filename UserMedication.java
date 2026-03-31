@@ -2,6 +2,8 @@ import java.lang.IllegalArgumentException;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Arrays;
 
 public class UserMedication{
 
@@ -19,16 +21,14 @@ public class UserMedication{
 	5	CHECK IF MOST RECENT	isMostRecentMedicationStillActive(
 		MED STILL ACTIVE	User user)
 	
-	6	TODO			
+	6	GET NEXT MED TO TAKE	getNextMedicationToTake(
+					Medication[] dailyRoutine, 
+					Medication mostRecentMed)
+
+	7	TODO			
  											This class is a work in progress.
 	
 	*/
-
-
-
-
-
-
 
 
 
@@ -289,6 +289,7 @@ public class UserMedication{
 	// Checks if most recent Medication still actively providing 
 	// mental clarity for user	
 
+
 	public static boolean isMostRecentMedicationStillActive(User user){
 		
 		Medication mostRecentMed = 
@@ -332,7 +333,6 @@ public class UserMedication{
 	}
 
 
-
 	
 /*
 				     Page 5
@@ -341,30 +341,99 @@ public class UserMedication{
 */
 
 
+	// GET NEXT MED USER SHOULD TAKE FUNCTION // 
+
+	// Returns Medication that should be taken next according to
+	// provided Medication array dailyRoutine
+	// and provided Medication representing most recent Med
+
+
+	public static Medication getNextMedicationToTake(
+	Medication[] dailyRoutine, Medication mostRecentMed) {
+
+		// For convenience of implementation
+
+		List<Medication> dailyRoutine_List = 
+		Arrays.asList(dailyRoutine);
+		
+		int mostRecentMed_index = 
+		dailyRoutine_List.indexOf(mostRecentMed);
+
+		// Error: mostRecentMed not in dailyRoutine_List
+
+		if(mostRecentMed_index == -1){
+
+			String error_message = 
+			"Function for getting next Medication to take " +
+			" was provided Medication that does not appear " +
+			"in also provided Medication array. " + 
+			DefaultMedicationData.
+			DEFAULT_MEDICATION_ERROR_MESSAGE_SUFFIX + "\n";
+
+			System.err.print(new IllegalArgumentException(
+			error_message)); 
+			
+			return DefaultMedicationData.DEFAULT_MEDICATION;
+		}
+
+		// Edge case: mostRecentMed is last Medication 
+		// in dailyRoutine Medication List
+
+		if(mostRecentMed_index == dailyRoutine_List.size() - 1){
+
+			return dailyRoutine_List.get(0);
+
+		}
+
+		// Next Medication to take 
+		// is next Medication in dailyRoutine Medication List
+
+		return dailyRoutine_List.get(mostRecentMed_index + 1);		
+	}
+
+/*
+				     Page 6
+
+<-- CTRL + B							    CTRL + F -->
+*/
+
 	
 	/*
 
 	TODO
 	
-	isMedNextInRoutine
+	public static boolean HasDurationSinceLastRoutinePassed(LocalDateTime)
+		// define static DURATION BETWEEN ROUTINES
+
+		// set to 12 hrs for now
+
+
+		// check if LocalDateTime is at least 12 hours ago
 		
-		exception/false if not in dailyRoutine
-		
-		if next one check if most recent med was lastTaken on diff Day
+		// taken....at least 12 hours ago
 
-	WasTakenYesterdayOrEarlier(LocalDateTime)
+		// at least
 
-	nextMedInRoutine --> UserMedHelper
-
-	shouldUserTakeMedNow --> UserMed
+	shouldUserTakeAnotherMedNow --> UserMed
 
 		returns boolean obv
 
-		checks dailyRoutine to see next med
+		gets most recent med
+	
+		// checks if still active
 
-		to see prev med and check if lastTaken		
+		if not
+		
+		gets next Med
 
-		if mostrecentmed lowest, check first item for nextMed
+		// if next med is first in routine
+
+		//checks if duration has passed
+
+		// returns true
+
+			
+		
 	
 	takeMed --> userMed
 
