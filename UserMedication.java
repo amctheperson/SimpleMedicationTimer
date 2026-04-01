@@ -1,4 +1,5 @@
 import java.lang.IllegalArgumentException;
+import java.lang.Integer;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.time.temporal.ChronoUnit;
@@ -26,16 +27,15 @@ public class UserMedication{
 	6	GET NEXT MED TO TAKE	getNextMedicationToTake(
 					Medication[] dailyRoutine, 
 					Medication mostRecentMed)
+	
+	7	CHECK IF DURATION	hasDurationBetweenRoutinesPassed(
+		PASSED ON		LocalDateTime mostRecentMed_takenAt)	
+		LOCALDATETIME
 
-	7	TODO			
+	8	TODO			
  											This class is a work in progress.
 	
 	*/
-
-
-
-
-
 
 
 
@@ -397,28 +397,68 @@ public class UserMedication{
 <-- CTRL + B							    CTRL + F -->
 */
 
+
+	// CHECK IF DURATION BETWEEN ROUTINES PASSED FUNCTION //
+
+	// Checks if alotted hours set by 
+	// static variable DURATION_BETWEEN_ROUTINES has passed since provided
+	// LocalDateTime until now
+
+ 
+	// int value of hours
+
+	public static int DURATION_BETWEEN_ROUTINES = 12;
+
+	public static boolean hasDurationBetweenRoutinesPassed(
+	LocalDateTime mostRecentMed_takenAt){
+
+		// boolean check via LocalDateTime class method
+		// if mostRecentMed_takenAt + duration <= now()
+
+		LocalDateTime durationAfter_mostRecentMed_takenAt = 
+		mostRecentMed_takenAt.plusHours(
+			Integer.valueOf(DURATION_BETWEEN_ROUTINES).longValue()
+		);
+
+		LocalDateTime rightNow = LocalDateTime.now();
+
+		boolean durationPassed = 
+		durationAfter_mostRecentMed_takenAt.isBefore(rightNow) ||
+		durationAfter_mostRecentMed_takenAt.isEqual(rightNow);
+
+		return durationPassed;
+			
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+/*
+				     Page 7
+
+<-- CTRL + B							    CTRL + F -->
+*/
+
 	
 	/*
 
 	TODO
-
-	refactor method that takes User lol, should only be taking
-	whenLastTaken and.... Medication
-
-		obv exception and return false if provided Medication
-		not in whenLastTaken
 	
-	public static boolean HasDurationSinceLastRoutinePassed(LocalDateTime)
-		// define static DURATION BETWEEN ROUTINES
-
-		// set to 12 hrs for now
-
-
-		// check if LocalDateTime is at least 12 hours ago
-		
-		// taken....at least 12 hours ago
-
-		// at least
 
 	shouldUserTakeAnotherMedNow --> UserMed
 
@@ -445,6 +485,8 @@ public class UserMedication{
 
 		update user
 		update lastMedTakenByUser
+
+	move helper functions to UserMedicationHelper
 	
 	*/
 
