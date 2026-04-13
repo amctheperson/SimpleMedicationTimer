@@ -287,39 +287,39 @@ public class UserMedication{
 	// CHECK IF MOST RECENT MED TAKEN STILL ACTIVE FUNCTION
 	
 	// Checks if most recent Medication still actively providing 
-	// mental clarity for user	
+	// mental clarity for user, returns True if so	
 
 
-	public static boolean isMostRecentMedicationStillActive(User user){
-		
-		Medication mostRecentMed = 
-		getMostRecentlyTakenMedication(user.getWhenLastTaken());
+	public static boolean isMostRecentMedicationStillActive(
+	Medication mostRecentMed, HashMap<Medication, 
+	LocalDateTime> whenLastTaken){
 
-		// Edge case: Default Medication returned as most recent Med
-  
-		// Indicates that the most recent Medication does not exist
-		// therefore no Medication is still active
+		// Error case: mostRecentMed not in keys of whenLastTaken
+	
+		if(!whenLastTaken.containsKey(mostRecentMed)){
 
-		if(mostRecentMed.equals(
-		DefaultMedicationData.DEFAULT_MEDICATION)){
+			String error_message = 
+			"Provided HashMap whenLastTaken does not contain " + 
+			"provided Medication mostRecentMed as a key.\n";
+
+			var error = new IllegalArgumentException(error_message);		
+			System.err.print(error);	
 
 			return false;
 
-		}		
+		}
 
-		// mostRecentMed guaranteed to exist as key inside
-		// whenLastTaken of user
+		// Get time remaining active of mostRecentMed
 
 		LocalDateTime mostRecentMed_takenAt = 
-		user.getWhenLastTaken().get(mostRecentMed);
+		whenLastTaken.get(mostRecentMed);
 
 		RemainingTime timeLeftActive = 
 		calculateRemainingTimeActive(
 			mostRecentMed, 
-			mostRecentMed_takenAt
-		);
+			mostRecentMed_takenAt);
 
-		// No active time remains on mostRecentMed
+		// No time remaining active -> Med not still active
 
 		if(	timeLeftActive.remainingWholeHours() == 0 &&
 			timeLeftActive.remainingMinutes() == 0 	){
@@ -327,13 +327,12 @@ public class UserMedication{
 			return false;
 
 		}
+
+		// Any time remaining active -> Med still active
 		
 		return true; 
 
-	}
-
-
-	
+	}	
 /*
 				     Page 5
 
@@ -454,7 +453,20 @@ public class UserMedication{
 <-- CTRL + B							    CTRL + F -->
 */
 
-	
+	/*
+	public static boolean shouldUserTakeAnotherMedNow(
+	HashMap<Medication, LocalDateTime> whenLastTaken){
+
+	Medication mostRecentMed = getMostRecentMedication(whenLastTaken);
+
+	// okay even in your drunk stupor you still realize that
+	// isMostRecentMedicationStillActive should not take a whole User
+	// as an arg 
+
+	if 		
+
+	}
+	*/	
 	/*
 
 	TODO
