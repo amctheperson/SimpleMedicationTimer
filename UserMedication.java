@@ -1,13 +1,13 @@
 import java.lang.IllegalArgumentException;
 import java.lang.Integer;
-import java.time.LocalDateTime;
-import java.util.Map;
+
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
 
 public class UserMedication{
 
@@ -23,8 +23,10 @@ public class UserMedication{
 	3-4	TIME LEFT OF		calculateRemainingTimeActive( 
 		ACTIVE MED		Medication med, LocalDateTime takenAt)
 
-	5	CHECK IF MOST RECENT	isMedicationStillActive(
-		MED STILL ACTIVE	User user)
+	5	CHECK IF MED		isMedicationStillActive(
+		STILL ACTIVE		Medication med,
+					HashMap<Medication, LocalDateTime> 
+					whenLastTaken)
 	
 	6-7	GET NEXT MED TO TAKE	getNextMedicationToTake(
 					Medication mostRecentMed, 
@@ -32,24 +34,22 @@ public class UserMedication{
 					HashMap<Medication,LocalDateTime>
 					whenLastTaken)
  	
-	8	CHECK IF DURATION	hasDurationBetweenRoutinesPassed(
-		PASSED ON		LocalDateTime mostRecentMed_takenAt)	
-		LOCALDATETIME
-
-	9	VERIFY NEXT MED		shouldNextMedicationBeTakenNow(
+	8	VERIFY NEXT MED		shouldNextMedicationBeTakenNow(
 		OK TO TAKE NOW		Medication[] dailyRoutine,	
 					HashMap<Medication,LocalDateTime>
 					whenLastTaken)
 
-	10	HAVE USER TAKE MED	takeMedication(User user, 
-					Medication med) 
+	9	HAVE USER TAKE MED	takeMedication(User user, 
+					Medication med)
+ 
 
-				
-
-	This class is a work in progress.
-
-	
+	This class contains functions that use User class properties 
+	to obtain information relevant to the front-end of this application.
+			
 	*/
+
+
+
 /*
 				     Page 0
 
@@ -412,7 +412,8 @@ public class UserMedication{
 		LocalDateTime mostRecentMed_takenAt = 
 		whenLastTaken.get(mostRecentMed);
 
-		if(hasDurationBetweenRoutinesPassed(mostRecentMed_takenAt)){
+		if(UserMedicationHelper.hasDurationBetweenRoutinesPassed(
+		mostRecentMed_takenAt)){
 
 			return dailyRoutine_List.get(0);
 
@@ -447,69 +448,12 @@ public class UserMedication{
 
 
 
-
 /*
 				     Page 7
 
 <-- CTRL + B							    CTRL + F -->
 */
 
-
-	// CHECK IF DURATION BETWEEN ROUTINES PASSED FUNCTION //
-
-	// Checks if alotted hours set by 
-	// static variable DURATION_BETWEEN_ROUTINES has passed since provided
-	// LocalDateTime until now
-
- 
-	// int value of hours
-
-	public static int DURATION_BETWEEN_ROUTINES = 12;
-
-	public static boolean hasDurationBetweenRoutinesPassed(
-	LocalDateTime mostRecentMed_takenAt){
-
-		// boolean check via LocalDateTime class method
-		// if mostRecentMed_takenAt + duration <= now()
-
-		LocalDateTime durationAfter_mostRecentMed_takenAt = 
-		mostRecentMed_takenAt.plusHours(
-			Integer.valueOf(DURATION_BETWEEN_ROUTINES).longValue()
-		);
-
-		LocalDateTime rightNow = LocalDateTime.now();
-
-		boolean durationPassed = 
-		durationAfter_mostRecentMed_takenAt.isBefore(rightNow) ||
-		durationAfter_mostRecentMed_takenAt.isEqual(rightNow);
-
-		return durationPassed;
-			
-	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-/*
-				     Page 8
-
-<-- CTRL + B							    CTRL + F -->
-*/
 
 
 	// SHOULD NEXT MED BE TAKEN NOW FUNCTION //
@@ -560,10 +504,9 @@ public class UserMedication{
 		return true;
 	
 	}
-
 	
 /*
-				     Page 9
+				     Page 8
 
 <-- CTRL + B							    CTRL + F -->
 */
@@ -620,54 +563,8 @@ public class UserMedication{
 
 	}
 /*
-				     Page 10
+				     Page 9
 
-<-- CTRL + B							    CTRL + F -->
-*/
-
-
-
-	
-/*
-
-	move helper functions to UserMedicationHelper
-	
-	*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-				     Page 5
-
-<-- CTRL + B							    CTRL + F -->
+<-- CTRL + B							    
 */
 }
