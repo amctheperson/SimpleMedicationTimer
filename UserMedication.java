@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -42,8 +44,6 @@ public class UserMedication{
 											This class is a work in progress.
 	
 	*/
-
-
 
 
 
@@ -351,14 +351,12 @@ public class UserMedication{
 
 		// Error: mostRecentMed not in dailyRoutine_List
 
+		// List conversion done for ease of implementation
+
 		List<Medication> dailyRoutine_List = 
 		Arrays.asList(dailyRoutine);
 		
-		int mostRecentMed_index = 
-		dailyRoutine_List.indexOf(mostRecentMed);
-
-
-		if(mostRecentMed_index == -1){
+		if(!dailyRoutine_List.contains(mostRecentMed)){
 
 			String error_message = 
 			"Function for getting next Medication to take " +
@@ -389,7 +387,9 @@ public class UserMedication{
 			
 			return DefaultMedicationData.DEFAULT_MEDICATION;
 		}
+
 		// (FUNCTION CONTINUES ON PAGE 7 -->)
+
 /*
 				     Page 6
 
@@ -401,6 +401,9 @@ public class UserMedication{
 	// (contd.)
 
 
+		int mostRecentMed_index = 
+		dailyRoutine_List.indexOf(mostRecentMed); 
+		
 		// Case 1: mostRecentMed has been taken more than a duration
 		// of time ago ->
 		// The routine starts anew 
@@ -418,7 +421,7 @@ public class UserMedication{
 		// and was taken as part of today's routine -> 
 		// Today's routine has finished
 
-		if(mostRecentMed_index == dailyRoutine_List.size() - 1){
+		if( mostRecentMed_index == dailyRoutine_List.size() - 1){
 
 			return DefaultMedicationData.DEFAULT_MEDICATION;
 
@@ -430,9 +433,6 @@ public class UserMedication{
 
 		return dailyRoutine_List.get(mostRecentMed_index + 1);		
 	}
-
-
-
 
 
 
@@ -567,7 +567,14 @@ public class UserMedication{
 <-- CTRL + B							    CTRL + F -->
 */
 
-	
+	/*
+	public static boolean takeMedication(User user, Medication med){
+
+		if(user.	
+
+	}
+
+	*/
 /*
 
 	TODO
