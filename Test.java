@@ -1,8 +1,10 @@
 import java.time.LocalDateTime;
 import java.util.HashMap;
-//import java.lang.Record;
+import java.io.File; 
+//import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 
-public class Test{
+
+public class Test extends DefaultMedicationData{
 
 	public static Medication loadTestMedication() throws Exception{
 
@@ -27,28 +29,16 @@ public class Test{
 
 	public static void main(String[] args) throws Exception{
 
-		UserMedication.RemainingTime testRT = 
-		new UserMedication.RemainingTime(1,27);
-
-		System.out.println(testRT);
- 
-		/*	
 		Medication testMed = loadTestMedication();
+	
+		User loadedUser = UserData.loadUserFromJsonFile();
 
-		System.out.println(testMed);
-		
-		String testTakenAt_String = "Mar 25 2026 10:03 PM";
-		
-		LocalDateTime testTakenAt = LocalDateTime.parse(
-		testTakenAt_String, UserData.DISPLAY_FORMAT);
+		System.out.println(loadedUser);
 
-		RemainingTime testRemainingTime = 
-		UserMedication.calculateRemainingTimeActive(
-		testMed, testTakenAt);	
+		UserMedication.takeMedication(loadedUser, 
+		DefaultMedicationData.DEFAULT_MEDICATION);
 
-		System.out.println(testRemainingTime.remainingWholeHours());
-		System.out.println(testRemainingTime.minutes());
+		System.out.println(loadedUser);
 
-		*/
 	}
 }
