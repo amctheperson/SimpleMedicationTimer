@@ -21,27 +21,27 @@ public class UserMedication{
 	3-4	TIME LEFT OF		calculateRemainingTimeActive( 
 		ACTIVE MED		Medication med, LocalDateTime takenAt)
 
-	5	CHECK IF MOST RECENT	isMostRecentMedicationStillActive(
+	5	CHECK IF MOST RECENT	isMedicationStillActive(
 		MED STILL ACTIVE	User user)
 	
-	6	GET NEXT MED TO TAKE	getNextMedicationToTake(
-					Medication[] dailyRoutine, 
-					Medication mostRecentMed)
-	
-	7	CHECK IF DURATION	hasDurationBetweenRoutinesPassed(
+	6-7	GET NEXT MED TO TAKE	getNextMedicationToTake(
+					Medication mostRecentMed, 
+					Medication[] dailyRoutine,
+					HashMap<Medication,LocalDateTime>
+					whenLastTaken)
+ 	
+	8	CHECK IF DURATION	hasDurationBetweenRoutinesPassed(
 		PASSED ON		LocalDateTime mostRecentMed_takenAt)	
 		LOCALDATETIME
 
-	8	TODO			
- 											This class is a work in progress.
+	9	VERIFY NEXT MED		shouldNextMedicationBeTakenNow(
+		OK TO TAKE NOW		Medication[] dailyRoutine,	
+					HashMap<Medication,LocalDateTime>
+					whenLastTaken)
+ 
+											This class is a work in progress.
 	
 	*/
-
-
-
-
-
-
 
 
 
@@ -284,23 +284,24 @@ public class UserMedication{
 */
 
 
-	// CHECK IF MOST RECENT MED TAKEN STILL ACTIVE FUNCTION
+	// CHECK IF MED TAKEN STILL ACTIVE FUNCTION
 	
-	// Checks if most recent Medication still actively providing 
-	// mental clarity for user, returns True if so	
+	// Checks if provided Medication still actively providing 
+	// mental clarity, based on provided HashMap 
 
 
-	public static boolean isMostRecentMedicationStillActive(
-	Medication mostRecentMed, HashMap<Medication, 
-	LocalDateTime> whenLastTaken){
+	public static boolean isMedicationStillActive(
+		Medication med, 
+		HashMap<Medication, LocalDateTime> whenLastTaken
+	){
 
-		// Error case: mostRecentMed not in keys of whenLastTaken
+		// Error case: med not in keys of whenLastTaken
 	
-		if(!whenLastTaken.containsKey(mostRecentMed)){
+		if(!whenLastTaken.containsKey(med)){
 
 			String error_message = 
 			"Provided HashMap whenLastTaken does not contain " + 
-			"provided Medication mostRecentMed as a key.\n";
+			"provided Medication med as a key.\n";
 
 			var error = new IllegalArgumentException(error_message);		
 			System.err.print(error);	
@@ -309,15 +310,15 @@ public class UserMedication{
 
 		}
 
-		// Get time remaining active of mostRecentMed
+		// Get time remaining active of med
 
-		LocalDateTime mostRecentMed_takenAt = 
-		whenLastTaken.get(mostRecentMed);
+		LocalDateTime med_takenAt = 
+		whenLastTaken.get(med);
 
 		RemainingTime timeLeftActive = 
 		calculateRemainingTimeActive(
-			mostRecentMed, 
-			mostRecentMed_takenAt);
+			med, 
+			med_takenAt);
 
 		// No time remaining active -> Med not still active
 
@@ -331,7 +332,6 @@ public class UserMedication{
 		// Any time remaining active -> Med still active
 		
 		return true; 
-
 	}	
 /*
 				     Page 5
@@ -343,14 +343,13 @@ public class UserMedication{
 	// GET NEXT MED USER SHOULD TAKE FUNCTION // 
 
 	// Returns Medication that should be taken next according to
-	// provided Medication array dailyRoutine
-	// and provided Medication representing most recent Med
-
+	// assorted provided data
 
 	public static Medication getNextMedicationToTake(
-	Medication[] dailyRoutine, Medication mostRecentMed) {
+	Medication mostRecentMed, Medication[] dailyRoutine, 
+	HashMap<Medication, LocalDateTime> whenLastTaken) {
 
-		// For convenience of implementation
+		// Error: mostRecentMed not in dailyRoutine_List
 
 		List<Medication> dailyRoutine_List = 
 		Arrays.asList(dailyRoutine);
@@ -358,7 +357,6 @@ public class UserMedication{
 		int mostRecentMed_index = 
 		dailyRoutine_List.indexOf(mostRecentMed);
 
-		// Error: mostRecentMed not in dailyRoutine_List
 
 		if(mostRecentMed_index == -1){
 
@@ -375,23 +373,82 @@ public class UserMedication{
 			return DefaultMedicationData.DEFAULT_MEDICATION;
 		}
 
-		// Edge case: mostRecentMed is last Medication 
-		// in dailyRoutine Medication List
+		// Error: mostRecentMed not a key for whenLastTaken 
 
-		if(mostRecentMed_index == dailyRoutine_List.size() - 1){
+		if(!whenLastTaken.containsKey(mostRecentMed)){
+
+			String error_message = 
+			"Function for getting next Medication to take " +
+			" was provided Medication that does not appear " +
+			"as a key in also provided HashMap. " + 
+			DefaultMedicationData.
+			DEFAULT_MEDICATION_ERROR_MESSAGE_SUFFIX + "\n";
+
+			System.err.print(new IllegalArgumentException(
+			error_message)); 
+			
+			return DefaultMedicationData.DEFAULT_MEDICATION;
+		}
+		// (FUNCTION CONTINUES ON PAGE 7 -->)
+/*
+				     Page 6
+
+<-- CTRL + B							    CTRL + F -->
+*/
+	
+
+	// GET NEXT MED USER SHOULD TAKE FUNCTION // 
+	// (contd.)
+
+
+		// Case 1: mostRecentMed has been taken more than a duration
+		// of time ago ->
+		// The routine starts anew 
+
+		LocalDateTime mostRecentMed_takenAt = 
+		whenLastTaken.get(mostRecentMed);
+
+		if(hasDurationBetweenRoutinesPassed(mostRecentMed_takenAt)){
 
 			return dailyRoutine_List.get(0);
 
 		}
 
-		// Next Medication to take 
-		// is next Medication in dailyRoutine Medication List
+		// Case 2: mostRecentMed is last Medication of routine
+		// and was taken as part of today's routine -> 
+		// Today's routine has finished
+
+		if(mostRecentMed_index == dailyRoutine_List.size() - 1){
+
+			return DefaultMedicationData.DEFAULT_MEDICATION;
+
+		}
+
+		// Case 3: another Medication follows after mostRecentMed,
+		// which was taken as part of today's routine ->
+		// Continue with today's routine
 
 		return dailyRoutine_List.get(mostRecentMed_index + 1);		
 	}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*
-				     Page 6
+				     Page 7
 
 <-- CTRL + B							    CTRL + F -->
 */
@@ -448,50 +505,74 @@ public class UserMedication{
 
 	
 /*
-				     Page 7
+				     Page 8
 
 <-- CTRL + B							    CTRL + F -->
 */
 
-	/*
-	public static boolean shouldUserTakeAnotherMedNow(
-	HashMap<Medication, LocalDateTime> whenLastTaken){
 
-	Medication mostRecentMed = getMostRecentMedication(whenLastTaken);
+	// SHOULD NEXT MED BE TAKEN NOW FUNCTION //
 
-	// okay even in your drunk stupor you still realize that
-	// isMostRecentMedicationStillActive should not take a whole User
-	// as an arg 
+	// Checks if next Medication to be taken should be taken now 
+		
+	public static boolean shouldNextMedicationBeTakenNow(Medication[] 
+	dailyRoutine, HashMap<Medication,LocalDateTime> whenLastTaken){
 
-	if 		
+		Medication mostRecentMed = 
+		getMostRecentlyTakenMedication(whenLastTaken);
 
+		boolean mostRecentMedStillActive =
+		isMedicationStillActive(mostRecentMed, whenLastTaken);
+
+		// Check 1: If most recently taken Medication still active 
+		// then next Medication to be taken should not be taken yet
+
+		if(mostRecentMedStillActive){
+
+			return false;
+		}	
+		
+		Medication nextMed = 
+		getNextMedicationToTake(mostRecentMed, dailyRoutine, 
+		whenLastTaken);
+		
+		// Check 2: Next Med is Default Med
+		// Meaning the actual next Medication to take
+		// is not available yet
+	  
+		if(nextMed.equals(DefaultMedicationData.DEFAULT_MEDICATION)){
+
+			return false;
+
+		}
+
+		// If most recently taken Medication no longer active and
+		// the next Medication either
+
+			// continues the daily routine as expected
+
+			// or starts new routine since duration of time passed
+			// since last Medication was taken
+
+		// then next Medication to take should be taken
+
+		return true;
+	
 	}
-	*/	
-	/*
+
+	
+/*
+				     Page 9
+
+<-- CTRL + B							    CTRL + F -->
+*/
+
+	
+/*
 
 	TODO
 	
 
-	shouldUserTakeAnotherMedNow --> UserMed
-
-		returns boolean obv
-
-		gets most recent med
-	
-		// checks if still active
-
-		if not
-		
-		gets next Med
-
-		// if next med is first in routine
-
-		//checks if duration has passed
-
-		// returns true
-
-			
-		
 	
 	takeMed --> userMed
 
