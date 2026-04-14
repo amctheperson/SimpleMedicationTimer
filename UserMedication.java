@@ -40,15 +40,16 @@ public class UserMedication{
 		OK TO TAKE NOW		Medication[] dailyRoutine,	
 					HashMap<Medication,LocalDateTime>
 					whenLastTaken)
- 
-											This class is a work in progress.
+
+	10	HAVE USER TAKE MED	takeMedication(User user, 
+					Medication med) 
+
+				
+
+	This class is a work in progress.
+
 	
 	*/
-
-
-
-
-
 /*
 				     Page 0
 
@@ -567,24 +568,67 @@ public class UserMedication{
 <-- CTRL + B							    CTRL + F -->
 */
 
-	/*
+
+	// TAKE MEDICATION FUNCTION //
+		
+	// Updates provided User to reflect provided Medication being taken now
+	// Returns true if update successful, false if not
+
+	
 	public static boolean takeMedication(User user, Medication med){
 
-		if(user.	
+		// Error: med not in dailyRoutine of user
+
+		// List conversion done for ease of implementation
+
+		Medication[] user_dailyRoutine = user.getDailyRoutine();
+
+		List<Medication> user_dailyRoutine_List = 
+		Arrays.asList(user_dailyRoutine);
+		
+		if(!user_dailyRoutine_List.contains(med)){
+
+			String error_message = 
+			"Function for User to take Medication " +
+			"was provided Medication that does not appear " +
+			"in also-provided Medication array. " + 
+			"Returning false to function takeMedication.\n"; 
+
+			System.err.print(new IllegalArgumentException(
+			error_message)); 
+		
+			return false;	
+		}
+
+		// Add pair to user's whenLastTaken HashMap to reflect
+		// provided Medication being taken right now		
+	
+		HashMap<Medication,LocalDateTime> user_whenLastTaken = 
+		user.getWhenLastTaken();
+		
+		// Formatting LocalDateTime pre-emptively
+
+		String right_now_String = 
+		LocalDateTime.now().format(UserData.DISPLAY_FORMAT);
+
+		LocalDateTime right_now = 
+		LocalDateTime.parse(right_now_String, UserData.DISPLAY_FORMAT);	
+
+		user_whenLastTaken.put(med, right_now);
+		
+		return true;	
 
 	}
-
-	*/
 /*
+				     Page 10
 
-	TODO
+<-- CTRL + B							    CTRL + F -->
+*/
+
+
+
 	
-
-	
-	takeMed --> userMed
-
-		update user
-		update lastMedTakenByUser
+/*
 
 	move helper functions to UserMedicationHelper
 	
