@@ -1,12 +1,5 @@
-Simple Adderall Timer: THE BACK-END
+Simple Medication Timer: The Back-End
 
-A back-end for an application currently worked in progress meant to keep track of how long my ADHD meds are helping me focus.
+A back-end for a WIP Android app that displays remaining time medications a user takes is actively providing mental clarity.
 
-------> DISCLAIMERS <-------: 
-
-The developer of this project does not condone any misuse of prescription medication whatsoever.
-
-The developer of this project believes in the importance of medicating neurological conditions such as ADHD,
-but does not claim to be a medical professional nor should this project be considered a medical tool either.
-
-It is merely a personal tool to help keep track of how much remaining time of mental clarity at any point during a day.
+Disclaimer: This application will be merely a medication management tool, all medication taken by users should ultimately be taken as prescribed by a doctor.
