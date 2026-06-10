@@ -29,7 +29,7 @@ public class DefaultMedicationData {
 
 	Backup data is derived from the locally saved JSON Medication file
 	"DefaultMedication.json" representing the supplement/alternative to
-	ADHD medication that I typically use (caffeine)
+	the medication that I typically use (caffeine)
 
 	Note that this default Medication file is not counted as a Medication
 	file or treated as such as it should only be displayed and used 
