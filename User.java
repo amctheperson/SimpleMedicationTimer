@@ -37,7 +37,7 @@ public class User{
 
 	
 	This class defines the User object, used to represent
-	how and when the user of this application takes their ADHD
+	how and when the user of this application takes their
 	medication(s).
 	
 	*/
