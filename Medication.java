@@ -24,7 +24,7 @@ public class Medication{
 
 	
 	This class defines the Medication object, used to represent
-	the individual ADHD medications that the user takes.
+	the individual medications that the user takes.
 	
 	*/
 
